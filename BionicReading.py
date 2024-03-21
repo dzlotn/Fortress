@@ -1,4 +1,4 @@
-def uppercase_first_half(input_string):
+def uppercaseFirstHalf(input_string):
     # Calculate the midpoint of the string
     midpoint = len(input_string) // 2
 
@@ -7,7 +7,16 @@ def uppercase_first_half(input_string):
 
     return modified_string
 
-# Example usage:
-input_string = input("Enter a string: ")
-result = uppercase_first_half(input_string)
-print("Modified string:", result)
+def bionicSentence(inputsentence):
+    modifiedSentence = ""
+    #Splits the sentence into indivudal words that can then be modified
+    tokens = inputsentence.split(" ")
+    #Iterates through the token list and applies the uppercaseFirstHalf function to each word,
+    # appending them to a modified sentence variable
+    for i in range(len(tokens)):
+        modifiedSentence = modifiedSentence+uppercaseFirstHalf(tokens[i]) + " "
+    return modifiedSentence
+
+##TEST CASES
+inputsent = input("Enter a sentence ")
+print("Your modified sentence is: ", bionicSentence(inputsent))
