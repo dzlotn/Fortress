@@ -151,7 +151,7 @@ def playGame(deck, hands):
             p2= list(newPlayerTwo)
         else:
 	        print("You don't have four of that card")
-                     
+        
         if len(deck)<=5:
             print("There are now less than 5 cards. Calculating Scores.... ")
             run = False
