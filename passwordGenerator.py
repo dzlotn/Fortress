@@ -4,7 +4,7 @@
 #4/8/24
 
 import random
-
+#finds random prime number for len
 def rdmt1():
     check = True
     while True:
@@ -20,10 +20,14 @@ def rdmt1():
             return num
         else:
             check=True
-                       
+#creates password using sets of characters and pwd length found by rdmt1                
 def rdmt2(num):
     letters = "abcdefghijklmnopqrstuvwxyz"
     numbers = "1234567890"
+    statusDict = {
+        True:"APPROVED",
+        False: "FAILED"
+    }
     while True:
         pwd = []  
         for i in range(num):
@@ -34,21 +38,17 @@ def rdmt2(num):
                 pwd.append(numbers[random.randint(0,9)]) 
             else:
                 pwd.append(letters[random.randint(0,25)].upper())
-        if pwdCheckCons(pwd,num):
+        if pwdCheckCons(pwd,num,statusDict):
             break
-     
-        
             
     pwdf = "".join(pwd)
     print(f'\nFinal Password Generated: {pwdf}')
 
-def pwdCheckCons(pwd,num):
-    statusDict = {
-        True:"APPROVED",
-        False: "FAILED"
-    }
+#checks for errors in password
+def pwdCheckCons(pwd,num,statusDict):
+   
     pwdJoined = "".join(pwd)
-    print(f"\nChecking Password for Duplicates: {pwdJoined}")
+    print(f"\nChecking Password for Errors: {pwdJoined}")
     for i in range(0,num-1):
         if pwd[i]== pwd[i+1]:
             print(f"Duplicate Char Found: {pwd[i]}\nPassword Status: {statusDict[False]}\nGenerating New Password...")
@@ -56,30 +56,32 @@ def pwdCheckCons(pwd,num):
         if ord(pwd[i]) +1 == ord(pwd[i+1]) or ord(pwd[i]) -1 == ord(pwd[i+1]):
             print(f"Consecutive Characters in ASCII Found: {pwd[i]} and {pwd[i+1]}\nPassword Status:{statusDict[False]}\nGenerating New Password...")
             return False
-        
+    
+    
+    if pwdCheckKeyboard(pwd,num,statusDict) == False:
+        return False
+    
     print(f"Password Status: {statusDict[True]}")
     return True 
-    
-def pwdCheckKeyboard(pwd):
+
+#checks if consecutive characters in the password are next to eachother on the keyboard
+def pwdCheckKeyboard(pwd,num,statusDict):
+    pwdString = "".join(pwd)
     keyboardLayout = {
         "r1": "qwertyuiop",
         "r2": "asdfghjkl",
         "r3": "zxcvbnm"
     } 
-    for i in range(len(pwd)-1):
-        charFst = pwd[i]
-        charNxt = pwd[i+1]
+    for i in range(0,num-1):
+        charFst = pwdString[i]
+        charNxt = pwdString[i+1]
         for row in keyboardLayout.values():
             if charFst in row and charNxt in row:
-                print("yes")
                 if abs(row.index(charFst) -row.index(charNxt)) ==1:
-                    print(f"keys found next to eachother: {charFst} and {charNxt} ")
+                    print(f"Close Characters on Keyboard Found: {charFst} and {charNxt}\nPassword Status: {statusDict[False]}\nGenerating New Password...")
+                    return False
             
             
-        
-    
-    
-
     
 len = rdmt1()
 rdmt2(len)
