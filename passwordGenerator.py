@@ -4,6 +4,7 @@
 #4/8/24
 
 import random
+import secrets
 #finds random prime number for len
 def rdmt1():
     check = True
@@ -30,14 +31,27 @@ def rdmt2(num):
     }
     while True:
         pwd = []  
+        prev_type = None
+        consecutive_count=0
         for i in range(num):
-            case = random.randint(0,2)
-            if case == 0:
-                pwd.append(letters[random.randint(0,25)])
-            elif case == 1:
-                pwd.append(numbers[random.randint(0,9)]) 
-            else:
-                pwd.append(letters[random.randint(0,25)].upper())
+            while True:
+                case = secrets.randbelow(2)
+                if  case == 0 and (prev_type != 0 or consecutive_count < 3):  # Check if the previous character was not a number or consecutive count is less than 3
+                    pwd.append(numbers[random.randint(0, 9)])
+                    prev_type = 0
+                    consecutive_count = 0 if prev_type != 0 else consecutive_count + 1
+                    break
+                elif case == 1 and (prev_type != 1 or consecutive_count < 3):  # Check if the previous character was not a lowercase letter or consecutive count is less than 3
+                    pwd.append(letters[random.randint(0, 25)])
+                    prev_type = 1
+                    consecutive_count = 0 if prev_type != 1 else consecutive_count + 1
+                    break
+                elif case == 2 and (prev_type != 2 or consecutive_count < 3):  # Check if the previous character was not an uppercase letter or consecutive count is less than 3
+                    pwd.append(letters[random.randint(0, 25)].upper())
+                    prev_type = 2
+                    consecutive_count = 0 if prev_type != 2 else consecutive_count + 1
+                    break
+                
         if pwdCheckCons(pwd,num,statusDict):
             break
             
@@ -57,29 +71,51 @@ def pwdCheckCons(pwd,num,statusDict):
             print(f"Consecutive Characters in ASCII Found: {pwd[i]} and {pwd[i+1]}\nPassword Status:{statusDict[False]}\nGenerating New Password...")
             return False
     
-    
-    if pwdCheckKeyboard(pwd,num,statusDict) == False:
+    if pwdCheckKeyboardRows(pwd,num,statusDict) == False:
         return False
     
     print(f"Password Status: {statusDict[True]}")
     return True 
 
 #checks if consecutive characters in the password are next to eachother on the keyboard
-def pwdCheckKeyboard(pwd,num,statusDict):
+def pwdCheckKeyboardRows(pwd,num,statusDict):
     pwdString = "".join(pwd)
-    keyboardLayout = {
+    keyboardLayoutRow = {
         "r1": "qwertyuiop",
         "r2": "asdfghjkl",
         "r3": "zxcvbnm"
+        
     } 
+    
+    keyboardLayoutCol = {
+        "1":"1qaz",
+        "2":"2wsx",
+        "3":"3edc",
+        "4":"4rfv",
+        "5":"5tgb",
+        "6":"6yhn",
+        "7":"7ujm",
+        "8":"8ik",
+        "9":"9ol",
+        "0":"0p"
+    }
+    
     for i in range(0,num-1):
         charFst = pwdString[i]
         charNxt = pwdString[i+1]
-        for row in keyboardLayout.values():
+        for row in keyboardLayoutRow.values():
             if charFst in row and charNxt in row:
                 if abs(row.index(charFst) -row.index(charNxt)) ==1:
-                    print(f"Close Characters on Keyboard Found: {charFst} and {charNxt}\nPassword Status: {statusDict[False]}\nGenerating New Password...")
+                    print(f"Close Characters on Keyboard Found (row wise): {charFst} and {charNxt}\nPassword Status: {statusDict[False]}\nGenerating New Password...")
                     return False
+    for i in range(0,num-1):
+        charFst = pwdString[i]
+        charNxt = pwdString[i+1]
+        for row in keyboardLayoutCol.values():
+            if charFst in row and charNxt in row:
+                if abs(row.index(charFst)- row.index(charNxt))==1:
+                    print(f"Close Characters on Keyboard Found (column wise): {charFst} and {charNxt}\nPassword Status: {statusDict[False]}\nGenerating New Password...")
+                    return False 
             
             
     
