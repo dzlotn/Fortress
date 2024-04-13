@@ -5,29 +5,39 @@
 
 import random
 import secrets
+import json
+import os 
 #finds random prime number for len
+def newprintLn():
+    print("\n----------------------\n")
+    
 def rdmt1():
     check = True
     while True:
         num = random.randint(10,100)
-        print(f'Trying: {num}')
+        print(f'\033[34mTrying Number: {num}\033[0m')
         for j in range(2,num//2+1):
             if num%j == 0:
-                print(f"Number fails divisibility test of {j} \n ----------------------------- \n")
+                print(f"\033[31mNumber fails divisibility test of {j}\033[0m")
+                newprintLn()
                 check=False
                 break
         if check:
-            print(f"Prime Number Found: {num}")
+            print(f"\033[32mPrime Number Found: {num}\033[33m")
+            print(f"Generating Password ofn length {num}...\033[0m")
+            newprintLn()
             return num
         else:
             check=True
 #creates password using sets of characters and pwd length found by rdmt1                
 def rdmt2(num):
+    #global variables
+    passwordlist = []
     letters = "abcdefghijklmnopqrstuvwxyz"
     numbers = "1234567890"
     statusDict = {
-        True:"APPROVED",
-        False: "FAILED"
+        True:"\033[32mAPPROVED\033[0m",
+        False: "\033[31mFAILED\033[0m"
     }
     while True:
         pwd = []  
@@ -35,7 +45,7 @@ def rdmt2(num):
         consecutive_count=0
         for i in range(num):
             while True:
-                case = secrets.randbelow(2)
+                case = secrets.randbelow(3)
                 if  case == 0 and (prev_type != 0 or consecutive_count < 3):  # Check if the previous character was not a number or consecutive count is less than 3
                     pwd.append(numbers[random.randint(0, 9)])
                     prev_type = 0
@@ -56,19 +66,40 @@ def rdmt2(num):
             break
             
     pwdf = "".join(pwd)
-    print(f'\nFinal Password Generated: {pwdf}')
+    ans = input(f"\nComputer has created a secure password. Would you like to use: {pwdf} as one of your passwords? (yes or no) ").upper()
+    if ans == "YES":
+        # passwordlist.append(pwdf)
+        # print(f'\n-------------\nFinal Password Generated:')
+        # print(f"\033[32m{pwdf}\033[0m")
+        pwdAppend1(pwdf)
+    else:
+        rdmt2(num)  
+    return pwdf
 
+def pwdAppend1(pwdf):
+    prog = input("\nWhat program would you like to assign the password to? " )
+    passwordManager[prog] = pwdf
+    print(f"Password({pwdf}) added to password manager under program ({prog})")
+    
+def pwdAppend2():
+    prog = input("\nWhat program would you like to assign the password to? " )
+    pwd = input("Type in the password to be added: ")
+    passwordManager[prog] = pwd
+    print(f"\033[32mPassword({pwd}) added to password manager under program ({prog})\033[0m")
+
+    
+    
 #checks for errors in password
-def pwdCheckCons(pwd,num,statusDict):
+def pwdCheckCons(pwd,num,statusDict): 
    
     pwdJoined = "".join(pwd)
     print(f"\nChecking Password for Errors: {pwdJoined}")
     for i in range(0,num-1):
         if pwd[i]== pwd[i+1]:
-            print(f"Duplicate Char Found: {pwd[i]}\nPassword Status: {statusDict[False]}\nGenerating New Password...")
+            print(f"\033[31mDuplicate Char Found: {pwd[i]}\n\033[0mPassword Status: {statusDict[False]}\033[33m\nGenerating New Password...\033[0m")
             return False
         if ord(pwd[i]) +1 == ord(pwd[i+1]) or ord(pwd[i]) -1 == ord(pwd[i+1]):
-            print(f"Consecutive Characters in ASCII Found: {pwd[i]} and {pwd[i+1]}\nPassword Status:{statusDict[False]}\nGenerating New Password...")
+            print(f"\033[31mConsecutive Characters in ASCII Found: {pwd[i]} and {pwd[i+1]}\n\033[0mPassword Status:{statusDict[False]}\033[33m\nGenerating New Password...\033[0m")
             return False
     
     if pwdCheckKeyboardRows(pwd,num,statusDict) == False:
@@ -86,7 +117,6 @@ def pwdCheckKeyboardRows(pwd,num,statusDict):
         "r3": "zxcvbnm"
         
     } 
-    
     keyboardLayoutCol = {
         "1":"1qaz",
         "2":"2wsx",
@@ -106,7 +136,7 @@ def pwdCheckKeyboardRows(pwd,num,statusDict):
         for row in keyboardLayoutRow.values():
             if charFst in row and charNxt in row:
                 if abs(row.index(charFst) -row.index(charNxt)) ==1:
-                    print(f"Close Characters on Keyboard Found (row wise): {charFst} and {charNxt}\nPassword Status: {statusDict[False]}\nGenerating New Password...")
+                    print(f"\033[31mClose Characters on Keyboard Found (row wise): {charFst} and {charNxt}\n\033[0mPassword Status: {statusDict[False]}\033[33m\nGenerating New Password...\033[0m")
                     return False
     for i in range(0,num-1):
         charFst = pwdString[i]
@@ -114,10 +144,64 @@ def pwdCheckKeyboardRows(pwd,num,statusDict):
         for row in keyboardLayoutCol.values():
             if charFst in row and charNxt in row:
                 if abs(row.index(charFst)- row.index(charNxt))==1:
-                    print(f"Close Characters on Keyboard Found (column wise): {charFst} and {charNxt}\nPassword Status: {statusDict[False]}\nGenerating New Password...")
+                    print(f"\033[31mClose Characters on Keyboard Found (column wise): {charFst} and {charNxt}\n\033[0mPassword Status: {statusDict[False]}\033[33m\nGenerating New Password...\033[0m")
                     return False 
             
             
-    
-len = rdmt1()
-rdmt2(len)
+def printPasswords(passwordManager):
+    print("\033[34m  {:<20}   {:<20}\033[0m".format("Program", "Password"))
+    for program, password in passwordManager.items():
+        print("  {:<20} | {:<15}".format(program,password))
+        
+
+  
+if __name__ == "__main__":
+    if os.path.exists("data.json"):
+        with open("data.json", "r") as p:
+            passwordManager = json.load(p)
+            
+    else:
+        passwordManager = {}
+    while True:
+        options = input("\nWhat would you like to do? Type the number command. \n 1: Allow computer to create secure password \n 2: Store username and password \n 3: Delete an existing password from the manager \n 4: Reassign a password \n 5: Print all passwords \n 6: End Program\n Choice: ")
+        newprintLn()
+        
+        if options =="1":
+            rdmt2(rdmt1())
+            
+        elif options == "2":
+            pwdAppend2()
+            
+        elif options == "3":
+            print("Here are the current passwords in the password manager: \n")
+            printPasswords(passwordManager)
+            deletedSet = input("Which password would you like to delete. Type in the program that the password refers to: ") 
+            if deletedSet in passwordManager: 
+                del passwordManager[deletedSet]
+                print(f"\033[31mPassword Deleted \033[0m")
+
+            else:
+                print(f"\033[31m\nPassword not found under written program\033[0m")
+                
+        elif options =="4":
+            print("\nHere are the current passwords in the password manager: ")
+            printPasswords(passwordManager)
+            reasignedSet = input("Which password would you like to reasign. Type in the program that the password refers to: ")  
+            if reasignedSet in passwordManager: 
+                newPwd = input("\nType in the new password: ")
+                passwordManager[reasignedSet] = newPwd
+                print(f"\033[33mPassword Reasigned \033[0m")
+
+            else:
+                print(f"\033[31mPassword not found under written program\033[0m")
+                
+        elif options=="5":
+            print("\nHere are the current passwords in the password manager: ")
+            printPasswords(passwordManager)
+             
+        elif options == "6":
+            print(f"\033[032mCode Completion - Passwords added to data.json file\033[0m")
+            break
+        newprintLn()           
+        with open('data.json','w') as f:
+            json.dump(passwordManager,f)
