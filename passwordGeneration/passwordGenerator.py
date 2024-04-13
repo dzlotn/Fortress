@@ -171,7 +171,7 @@ if __name__ == "__main__":
     else:
         passwordManager = {}
     while True:
-        options = input("\nWhat would you like to do? Type the number command. \n 1: Allow computer to create secure password \n 2: Store username and password \n 3: Delete an existing password from the manager \n 4: Reassign a password \n 5: Print all passwords \n 6: Delete Password File (PERMANNENT) \n 7: End Program\n Choice: ")
+        options = input("\nWhat would you like to do? Type the number command. \n 1: Allow computer to create secure password \n 2: Store username and password \n 3: Delete an existing password from the manager \n 4: Change a password \n 5: Print all passwords \n 6: Delete Password File (PERMANNENT) \n 7: End Program\n Choice: ")
         newprintLn()
         
         #lets computer create new password
@@ -200,11 +200,11 @@ if __name__ == "__main__":
         elif options =="4":
             print("\nHere are the current passwords in the password manager: ")
             printPasswords(passwordManager)
-            reasignedSet = input("Which password would you like to reasign. Type in the program that the password refers to: ")  
+            reasignedSet = input("Which password would you like to Update. Type in the program that the password refers to: ")  
             if reasignedSet in passwordManager: 
                 newPwd = input("\nType in the new password: ")
                 passwordManager[reasignedSet] = newPwd
-                print(f"\033[33mPassword Reasigned \033[0m")
+                print(f"\033[33mPassword Update \033[0m")
                 savePasswords(passwordManager)
 
 

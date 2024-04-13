@@ -3,7 +3,7 @@ def uppercaseFirstHalf(input_string):
     midpoint = len(input_string) // 2
 
     # Convert the first half of the string to uppercase
-    modified_string = input_string[:midpoint].upper() + input_string[midpoint:]
+    modified_string = "\033[34m" +input_string[:midpoint]+ "\033[0m" + input_string[midpoint:]
 
     return modified_string
 
