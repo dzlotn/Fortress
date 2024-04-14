@@ -82,14 +82,16 @@ def rdmt2(num):
 
 def pwdAppend1(pwdf):
     prog = input("\nWhat program would you like to assign the password to? " )
-    passwordManager[prog] = pwdf
-    print(f"\033[32mPassword({pwdf}) added to password manager under program ({prog})\033[0m")
+    uname = input("\nWhat is the username? ")
+    passwordManager[prog.upper()] = [uname,pwdf]
+    print(f"\033[32mPassword ({pwdf}) added to password manager under program ({prog.upper()})\033[0m")
     
 def pwdAppend2():
     prog = input("\nWhat program would you like to assign the password to? " )
+    uname = input("\nWhat is the username? ")
     pwd = input("Type in the password to be added: ")
-    passwordManager[prog] = pwd
-    print(f"\033[32mPassword({pwd}) added to password manager under program ({prog})\033[0m")
+    passwordManager[prog.upper()] = [uname,pwd]
+    print(f"\033[32mPassword ({pwd}) added to password manager under program ({prog.upper()})\033[0m")
 
     
     
@@ -102,7 +104,7 @@ def pwdCheckCons(pwd,num,statusDict):
         if pwd[i]== pwd[i+1]:
             print(f"\033[31mDuplicate Char Found: {pwd[i]}\n\033[0mPassword Status: {statusDict[False]}\033[33m\nGenerating New Password...\033[0m")
             return False
-        if ord(pwd[i]) +1 == ord(pwd[i+1]) or ord(pwd[i]) -1 == ord(pwd[i+1]):
+        if abs(ord(pwd[i]) - ord(pwd[i+1])) == 1:
             print(f"\033[31mConsecutive Characters in ASCII Found: {pwd[i]} and {pwd[i+1]}\n\033[0mPassword Status:{statusDict[False]}\033[33m\nGenerating New Password...\033[0m")
             return False
     
@@ -154,9 +156,9 @@ def pwdCheckKeyboardRows(pwd,num,statusDict):
  
 #prints passwords in nice table format           
 def printPasswords(passwordManager):
-    print("\033[34m  {:<20}   {:<20}\033[0m".format("Program", "Password"))
+    print("\033[34m  {:<20}   {:<35}   {:<20}\033[0m".format("Program", "Username", "Password"))
     for program, password in passwordManager.items():
-        print("  {:<20} | {:<15}".format(program,password))
+        print("  {:<20} | {:<35} | {:<20}".format(program,password[0],password[1]))
         
 #saves the passwords in a data.json file
 def savePasswords(passwordManager):
@@ -171,7 +173,7 @@ if __name__ == "__main__":
     else:
         passwordManager = {}
     while True:
-        options = input("\nWhat would you like to do? Type the number command. \n 1: Allow computer to create secure password \n 2: Store username and password \n 3: Delete an existing password from the manager \n 4: Change a password \n 5: Print all passwords \n 6: Delete Password File (PERMANNENT) \n 7: End Program\n Choice: ")
+        options = input("\nWhat would you like to do? Type the number command. \n 1: Allow computer to create secure password \n 2: Store new username and password \n 3: Delete a password from the manager \n 4: Change your username or password \n 5: Print all passwords \n 6: Delete Password File (PERMANNENT) \n 7: End Program\n Choice: ")
         newprintLn()
         
         #lets computer create new password
@@ -187,7 +189,7 @@ if __name__ == "__main__":
         elif options == "3":
             print("Here are the current passwords in the password manager: \n")
             printPasswords(passwordManager)
-            deletedSet = input("Which password would you like to delete. Type in the program that the password refers to: ") 
+            deletedSet = input("\nWhich password would you like to delete. Type in the program that the password refers to: ").upper()
             if deletedSet in passwordManager: 
                 del passwordManager[deletedSet]
                 print(f"\033[31mPassword Deleted \033[0m")
@@ -200,14 +202,23 @@ if __name__ == "__main__":
         elif options =="4":
             print("\nHere are the current passwords in the password manager: ")
             printPasswords(passwordManager)
-            reasignedSet = input("Which password would you like to Update. Type in the program that the password refers to: ")  
+            reasignedSet = input("Which password would you like to update? Type in the program that the password refers to: ").upper()
             if reasignedSet in passwordManager: 
-                newPwd = input("\nType in the new password: ")
-                passwordManager[reasignedSet] = newPwd
-                print(f"\033[33mPassword Update \033[0m")
+                choice = input("Would you like to change the username or password? ").upper()
+                if choice == "PASSWORD":
+                    newPwd = input("\nType in your new password: ")
+                    username, _ = passwordManager[reasignedSet]
+                    passwordManager[reasignedSet] = (username, newPwd)
+                    print(f"\033[33m{reasignedSet} password updated \033[0m")
+                elif choice =="USERNAME":
+                    newUname = input("\nType in your new username: ")
+                    _ , pwd = passwordManager[reasignedSet]
+                    passwordManager[reasignedSet] = (newUname, pwd)
+                    print(f"\033[33m{reasignedSet} username updated \033[0m")
+                else:
+                    print(f"\033[31mInvalid choice\033[0m")
+                    
                 savePasswords(passwordManager)
-
-
             else:
                 print(f"\033[31mPassword not found under written program\033[0m")
              
