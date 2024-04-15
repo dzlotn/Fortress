@@ -65,13 +65,13 @@ def rdmt2(num):
             
     pwdf = "".join(pwd)
     
-    ans = input(f"\nComputer has created a secure password. Would you like to use: \"{pwdf}\" as one of your passwords? (yes or no)\n").upper()
-    if ans == "YES":
+    ans = input(f"\nComputer has created a secure password. Would you like to use: \"{pwdf}\" as one of your passwords? (Y or N)\n").upper()
+    if ans == "Y":
         # passwordlist.append(pwdf)
         # print(f'\n-------------\nFinal Password Generated:')
         # print(f"\033[32m{pwdf}\033[0m")
         pwdAppend1(pwdf)
-    elif ans=="NO":
+    elif ans=="N":
         rdmt2(rdmt1())
     
     else:
@@ -173,7 +173,7 @@ if __name__ == "__main__":
     else:
         passwordManager = {}
     while True:
-        options = input("\nWhat would you like to do? Type the number command. \n 1: Allow computer to create secure password \n 2: Store new username and password \n 3: Delete a password from the manager \n 4: Change your username or password \n 5: Print all passwords \n 6: Delete Password File (PERMANNENT) \n 7: End Program\n Choice: ")
+        options = input("\nWhat would you like to do? \n 1: Computer creates secure password \n 2: Store new username and password \n 3: Delete a password \n 4: Change your username or password \n 5: Display all passwords \n 6: Delete Password File (PERMANNENT) \n 7: End Program\n Choice: ")
         newprintLn()
         
         #lets computer create new password
@@ -189,7 +189,7 @@ if __name__ == "__main__":
         elif options == "3":
             print("Here are the current passwords in the password manager: \n")
             printPasswords(passwordManager)
-            deletedSet = input("\nWhich password would you like to delete. Type in the program that the password refers to: ").upper()
+            deletedSet = input("\nWhich password would you like to delete. Enter program name: ").upper()
             if deletedSet in passwordManager: 
                 del passwordManager[deletedSet]
                 print(f"\033[31mPassword Deleted \033[0m")
@@ -202,17 +202,17 @@ if __name__ == "__main__":
         elif options =="4":
             print("\nHere are the current passwords in the password manager: ")
             printPasswords(passwordManager)
-            reasignedSet = input("Which password would you like to update? Type in the program that the password refers to: ").upper()
+            reasignedSet = input("Which program would you like to change? Enter program name: ").upper()
             if reasignedSet in passwordManager: 
                 choice = input("Would you like to change the username or password? ").upper()
                 if choice == "PASSWORD":
                     newPwd = input("\nType in your new password: ")
-                    username, _ = passwordManager[reasignedSet]
+                    username, a = passwordManager[reasignedSet]
                     passwordManager[reasignedSet] = (username, newPwd)
                     print(f"\033[33m{reasignedSet} password updated \033[0m")
                 elif choice =="USERNAME":
                     newUname = input("\nType in your new username: ")
-                    _ , pwd = passwordManager[reasignedSet]
+                    a , pwd = passwordManager[reasignedSet]
                     passwordManager[reasignedSet] = (newUname, pwd)
                     print(f"\033[33m{reasignedSet} username updated \033[0m")
                 else:
@@ -228,8 +228,8 @@ if __name__ == "__main__":
         
         #deletes password file
         elif options =="6":
-            check = input("Are you want to delete the password file. This is a permament action! (YES or NO)\n").upper()
-            if check == "YES":
+            check = input("Are you want to delete the password file. This is a permament action! (Y or N)\n").upper()
+            if check == "Y":
                 print(f"\033[31mPassword Data Removed\033[0m")
                 passwordManager = {}
                 os.remove("data.json")
@@ -238,4 +238,4 @@ if __name__ == "__main__":
             print(f"\033[032mCode Completion - Passwords added to data.json file\033[0m")
             break
         else:
-            print("Invalid Command. Please try again")
+            print(f"\033[031mInvalid Command. Please try again\033[0m")
