@@ -6,19 +6,27 @@
 import random
 import secrets
 import json
-import os 
-#finds random prime number for len
+import os
+import subprocess 
+
+#creates blank line of space
 def newprintLn():
     print("\n----------------------\n")
     
+#copies text to clipboard for ease of use
+def copyToClipboard(txt):
+    cmd='echo '+txt.strip()+'|clip'
+    return subprocess.check_call(cmd, shell=True)
+
+#finds random prime number for len
 def rdmt1():
     check = True
     while True:
         num = random.randint(10,100)
-        print(f'\n\033[34mTrying Number: {num}\033[0m')
+        # print(f'\n\033[34mTrying Number: {num}\033[0m')
         for j in range(2,num//2+1):
             if num%j == 0:
-                print(f"\033[31mNumber fails divisibility test of {j}\033[0m")
+                # print(f"\033[31mNumber fails divisibility test of {j}\033[0m")
                 check=False
                 break
         if check:
@@ -72,29 +80,28 @@ def rdmt2(num):
         # print(f"\033[32m{pwdf}\033[0m")
         pwdAppend1(pwdf)
     elif ans=="N":
-        rdmt2(rdmt1())
+        rdmt2(num)
     
     else:
         print("Invalid Response. \033[033m Generating new password... \033[0m")
-        rdmt2(rdmt1())   
+        rdmt2(num)   
                
     return pwdf
-
+#asigns password to program 
 def pwdAppend1(pwdf):
     prog = input("\nWhat program would you like to assign the password to? " )
     uname = input("\nWhat is the username? ")
     passwordManager[prog.upper()] = [uname,pwdf]
     print(f"\033[32mPassword ({pwdf}) added to password manager under program ({prog.upper()})\033[0m")
-    
+
+#allows user to add full login info
 def pwdAppend2():
     prog = input("\nWhat program would you like to assign the password to? " )
     uname = input("\nWhat is the username? ")
     pwd = input("Type in the password to be added: ")
     passwordManager[prog.upper()] = [uname,pwd]
     print(f"\033[32mPassword ({pwd}) added to password manager under program ({prog.upper()})\033[0m")
-
-    
-    
+  
 #checks for errors in password
 def pwdCheckCons(pwd,num,statusDict): 
    
@@ -156,15 +163,34 @@ def pwdCheckKeyboardRows(pwd,num,statusDict):
  
 #prints passwords in nice table format           
 def printPasswords(passwordManager):
+    decryptPasswords(passwordManager)
     print("\033[34m  {:<20}   {:<35}   {:<20}\033[0m".format("Program", "Username", "Password"))
     for program, password in passwordManager.items():
         print("  {:<20} | {:<35} | {:<20}".format(program,password[0],password[1]))
+
+def encryptPasswords(passwordManager):
+    for programs in passwordManager:
+        a,b = passwordManager[programs]
+        passwordManager[programs] = a, "".join([chr(ord(i) + 3) for i in b])
         
+def decryptPasswords(passwordManager):
+    for programs in passwordManager:
+        a,b = passwordManager[programs]
+        passwordManager[programs] = a, "".join([chr(ord(i) - 3) for i in b])
+     
 #saves the passwords in a data.json file
 def savePasswords(passwordManager):
+    encryptPasswords(passwordManager)
     with open('data.json','w') as f:
         json.dump(passwordManager,f) 
-        
+
+#prints all programs
+def printPrograms(passwordManager):
+    print("Here are the all the programs on the password manager:")
+    for i in passwordManager:
+                    print(f"\033[34m{i}\033[0m")
+    
+#main code loop    
 if __name__ == "__main__":
     if os.path.exists("data.json"):
         with open("data.json", "r") as p:
@@ -173,13 +199,19 @@ if __name__ == "__main__":
     else:
         passwordManager = {}
     while True:
-        options = input("\nWhat would you like to do? \n 1: Computer creates secure password \n 2: Store new username and password \n 3: Delete a password \n 4: Change your username or password \n 5: Display all passwords \n 6: Delete Password File (PERMANNENT) \n 7: End Program\n Choice: ")
+        options = input("\nWhat would you like to do? \n 1: Computer creates secure password \n 2: Store new username and password \n 3: Delete a password \n 4: Change your username or password \n 5: Display all passwords \n 6: Delete Password File (PERMANNENT) \n 7: Copy Password to Clipboard \n 8: End Program\n Choice: ")
         newprintLn()
         
         #lets computer create new password
         if options =="1":
-            rdmt2(rdmt1())
-            savePasswords(passwordManager)
+            c = input("Would you like your password to be a specific length? (Y or N)  ").upper()
+            if c=="Y":
+                x = input("Enter length of password: ")
+                if x.isdigit():
+                    rdmt2(int(x))
+                else: print ("\033[321Should be integer\033[0m")
+            elif c=="N":
+                rdmt2(rdmt1())
         
         #adds new password to manager  
         elif options == "2":
@@ -187,20 +219,19 @@ if __name__ == "__main__":
             
         #runs delete password code
         elif options == "3":
-            print("Here are the current passwords in the password manager: \n")
+            print("Password Manager: \n")
             printPasswords(passwordManager)
             deletedSet = input("\nWhich password would you like to delete. Enter program name: ").upper()
             if deletedSet in passwordManager: 
                 del passwordManager[deletedSet]
                 print(f"\033[31mPassword Deleted \033[0m")
-                savePasswords(passwordManager)
 
             else:
                 print(f"\033[31m\nPassword not found under written program\033[0m")
         
         #allows for password reasignment     
         elif options =="4":
-            print("\nHere are the current passwords in the password manager: ")
+            print("\nPassword Manager: ")
             printPasswords(passwordManager)
             reasignedSet = input("Which program would you like to change? Enter program name: ").upper()
             if reasignedSet in passwordManager: 
@@ -218,7 +249,6 @@ if __name__ == "__main__":
                 else:
                     print(f"\033[31mInvalid choice\033[0m")
                     
-                savePasswords(passwordManager)
             else:
                 print(f"\033[31mPassword not found under written program\033[0m")
              
@@ -234,8 +264,20 @@ if __name__ == "__main__":
                 passwordManager = {}
                 os.remove("data.json")
                 
-        elif options == "7":
+        elif options =="7":
+            printPrograms(passwordManager)
+            copyProgram = input("\nWhich password would you like to access. Enter program name: ").upper()
+            if copyProgram in passwordManager:
+                a,pwdCpy = passwordManager[copyProgram]
+                copyToClipboard(pwdCpy)  
+                print("\033[33mPassword Copied to Clipboard\033[0m")
+            else:
+                print(f"\033[31mPassword not found under written program\033[0m")  
+            
+        elif options == "8":
             print(f"\033[032mCode Completion - Passwords added to data.json file\033[0m")
+            savePasswords(passwordManager)
             break
+        
         else:
             print(f"\033[031mInvalid Command. Please try again\033[0m")
