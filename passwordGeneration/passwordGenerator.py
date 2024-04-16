@@ -8,7 +8,6 @@ import secrets
 import json
 import os
 import subprocess 
-
 #creates blank line of space
 def newprintLn():
     print("\n----------------------\n")
@@ -73,7 +72,7 @@ def rdmt2(num):
             
     pwdf = "".join(pwd)
     
-    ans = input(f"\nComputer has created a secure password. Would you like to use: \"{pwdf}\" as one of your passwords? (Y or N)\n").upper()
+    ans = input(f"\nComputer has created a secure password. Would you like to use: \"{pwdf}\" as one of your passwords? (Y or N) ").upper()
     if ans == "Y":
         # passwordlist.append(pwdf)
         # print(f'\n-------------\nFinal Password Generated:')
@@ -98,7 +97,8 @@ def pwdAppend1(pwdf):
 def pwdAppend2():
     prog = input("\nWhat program would you like to assign the password to? " )
     uname = input("\nWhat is the username? ")
-    pwd = input("Type in the password to be added: ")
+    pwd = input("\nType in the password to be added: ")
+    # pwdE = encryptPassword(pwd)
     passwordManager[prog.upper()] = [uname,pwd]
     print(f"\033[32mPassword ({pwd}) added to password manager under program ({prog.upper()})\033[0m")
   
@@ -151,9 +151,6 @@ def pwdCheckKeyboardRows(pwd,num,statusDict):
                 if abs(row.index(charFst) -row.index(charNxt)) ==1:
                     print(f"\033[31mClose Characters on Keyboard Found (row wise): {charFst} and {charNxt}\n\033[0mPassword Status: {statusDict[False]}\033[33m\nGenerating New Password...\033[0m")
                     return False
-    for i in range(0,num-1):
-        charFst = pwdString[i]
-        charNxt = pwdString[i+1]
         for row in keyboardLayoutCol.values():
             if charFst in row and charNxt in row:
                 if abs(row.index(charFst)- row.index(charNxt))==1:
@@ -163,43 +160,74 @@ def pwdCheckKeyboardRows(pwd,num,statusDict):
  
 #prints passwords in nice table format           
 def printPasswords(passwordManager):
-    decryptPasswords(passwordManager)
+    # decryptPasswords(passwordManager)
     print("\033[34m  {:<20}   {:<35}   {:<20}\033[0m".format("Program", "Username", "Password"))
     for program, password in passwordManager.items():
         print("  {:<20} | {:<35} | {:<20}".format(program,password[0],password[1]))
 
-def encryptPasswords(passwordManager):
-    for programs in passwordManager:
-        a,b = passwordManager[programs]
-        passwordManager[programs] = a, "".join([chr(ord(i) + 3) for i in b])
+#encrypts single password
+def encryptPassword(pwd):
+    encrypted_pwd = []
+    for i, char in enumerate(pwd):
+        shift = (i % 5) + 1  # Varying shift for each character
+        new_ord = ord(char) + shift
+        if new_ord > 126:  # Wrap around if beyond printable ASCII range
+            new_ord -= 94
+        encrypted_pwd.append(chr(new_ord))
+    return "".join(encrypted_pwd)
+
+def decryptPassword(pwd):
+    decrypted_pwd = ""
+    for i, char in enumerate(pwd):
+        shift = (i % 5) + 1
+        new_ord = ord(char) - shift
+        if new_ord < 32:  # Wrap around if below printable ASCII range
+            new_ord += 94
+        decrypted_pwd += chr(new_ord)
+    return decrypted_pwd
+
+
+def massDecryption(passwordManager):
+    decryptedPWDManager = {}
+    for program, data in passwordManager.items():
+        uname, pwd = data
+        decryptedPWDManager[program] = [uname, decryptPassword(pwd)]
+        print(f"PWD {program} done")
+    return decryptedPWDManager
         
-def decryptPasswords(passwordManager):
-    for programs in passwordManager:
-        a,b = passwordManager[programs]
-        passwordManager[programs] = a, "".join([chr(ord(i) - 3) for i in b])
+    
      
 #saves the passwords in a data.json file
 def savePasswords(passwordManager):
-    encryptPasswords(passwordManager)
-    with open('data.json','w') as f:
-        json.dump(passwordManager,f) 
+    #encrypts data
+    encryptedPasswordManager = {}
+    for program, data in passwordManager.items():
+        uname, pwd = data
+        encryptedPasswordManager[program] = [uname, encryptPassword(pwd)]
+         
+    with open('data.json', 'w') as f:
+        json.dump(encryptedPasswordManager, f)
+
 
 #prints all programs
 def printPrograms(passwordManager):
     print("Here are the all the programs on the password manager:")
     for i in passwordManager:
-                    print(f"\033[34m{i}\033[0m")
+        print(f"\033[34m{i}\033[0m")
+
     
 #main code loop    
 if __name__ == "__main__":
     if os.path.exists("data.json"):
         with open("data.json", "r") as p:
-            passwordManager = json.load(p)
+            encryptedPWDManager = json.load(p)
+            passwordManager = massDecryption(encryptedPWDManager)
+            # passwordManager ={program:[username, decryptPasswords(encryptedPassword)] for program, [username, encryptedPassword] in encryptedPasswordManager.items()}
             
     else:
         passwordManager = {}
     while True:
-        options = input("\nWhat would you like to do? \n 1: Computer creates secure password \n 2: Store new username and password \n 3: Delete a password \n 4: Change your username or password \n 5: Display all passwords \n 6: Delete Password File (PERMANNENT) \n 7: Copy Password to Clipboard \n 8: End Program\n Choice: ")
+        options = input("\nWhat would you like to do? \n 1: Computer creates secure password \n 2: Store new username and password \n 3: Delete a password \n 4: Change your username or password \n 5: Display all passwords \n 6: Delete Password File (PERMANNENT) \n 7: Copy Password to Clipboard \n 8: End Program and save work\n Choice: ")
         newprintLn()
         
         #lets computer create new password
@@ -270,14 +298,16 @@ if __name__ == "__main__":
             if copyProgram in passwordManager:
                 a,pwdCpy = passwordManager[copyProgram]
                 copyToClipboard(pwdCpy)  
-                print("\033[33mPassword Copied to Clipboard\033[0m")
+                print(f"\033[33mPassword ({pwdCpy}) Copied to Clipboard\033[0m")
             else:
                 print(f"\033[31mPassword not found under written program\033[0m")  
             
         elif options == "8":
-            print(f"\033[032mCode Completion - Passwords added to data.json file\033[0m")
-            savePasswords(passwordManager)
+            print(f"\033[032mCode Completion - Encrypted passwords added to data.json file\033[0m")
             break
         
         else:
             print(f"\033[031mInvalid Command. Please try again\033[0m")
+    
+    savePasswords(passwordManager)
+
