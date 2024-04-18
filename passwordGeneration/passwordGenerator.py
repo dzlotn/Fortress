@@ -35,6 +35,7 @@ def rdmt1():
             return num
         else:
             check=True
+            
 #creates password using sets of characters and pwd length found by rdmt1                
 def rdmt2(num):
     #global variables
@@ -71,13 +72,12 @@ def rdmt2(num):
             break
             
     pwdf = "".join(pwd)
-    
-    ans = input(f"\nComputer has created a secure password. Would you like to use: \"{pwdf}\" as one of your passwords? (Y or N) ").upper()
+    ans = input(f"\nComputer has created a secure password. Would you like to use: \"{pwdf}\" as the password? (Y or N) ").upper()
     if ans == "Y":
         # passwordlist.append(pwdf)
         # print(f'\n-------------\nFinal Password Generated:')
         # print(f"\033[32m{pwdf}\033[0m")
-        pwdAppend1(pwdf)
+        return pwdf
     elif ans=="N":
         rdmt2(num)
     
@@ -102,6 +102,28 @@ def pwdAppend2():
     passwordManager[prog.upper()] = [uname,pwd]
     print(f"\033[32mPassword ({pwd}) added to password manager under program ({prog.upper()})\033[0m")
   
+#check password strength
+def checkStrength(pwd):
+    score,diC,upC,lcC=0,0,0,0
+    threshold = int(len(pwd)/3)
+    pwdList = list(pwd)
+    for i in pwdList:
+        if i.isdigit():
+            diC +=1
+        if i.isupper():
+            upC +=1
+        if i.islower():
+            lcC +=1 
+    differences = (abs(threshold -diC), abs(threshold-upC), abs(threshold-lcC))
+    totalQuant =  round(float(sum(differences)/len(pwd)),4)*100
+    
+    print(f"intC: {diC/len(pwd)*100}%") 
+    print(f"upC: {upC/len(pwd)*100}%") 
+    print(f"lwC: {lcC/len(pwd)*100}%") 
+    print(f"Differences: {differences}")
+    
+    score = max(0, 100-totalQuant)
+    return score
 #checks for errors in password
 def pwdCheckCons(pwd,num,statusDict): 
    
@@ -169,7 +191,7 @@ def printPasswords(passwordManager):
 def encryptPassword(pwd):
     encrypted_pwd = []
     for i, char in enumerate(pwd):
-        shift = (i % 5) + 1  # Varying shift for each character
+        shift = (i % (len(pwd)-i)) + 1  # Varying shift for each character
         new_ord = ord(char) + shift
         if new_ord > 126:  # Wrap around if beyond printable ASCII range
             new_ord -= 94
@@ -177,22 +199,21 @@ def encryptPassword(pwd):
     return "".join(encrypted_pwd)
 
 def decryptPassword(pwd):
-    decrypted_pwd = ""
+    decrypted_pwd = []
     for i, char in enumerate(pwd):
-        shift = (i % 5) + 1
+        shift = (i % (len(pwd)-i)) + 1  # Varying shift for each character
         new_ord = ord(char) - shift
         if new_ord < 32:  # Wrap around if below printable ASCII range
             new_ord += 94
-        decrypted_pwd += chr(new_ord)
-    return decrypted_pwd
-
+        decrypted_pwd.append(chr(new_ord))
+    return "".join(decrypted_pwd)
 
 def massDecryption(passwordManager):
     decryptedPWDManager = {}
     for program, data in passwordManager.items():
         uname, pwd = data
         decryptedPWDManager[program] = [uname, decryptPassword(pwd)]
-        print(f"PWD {program} done")
+        # print(f"PWD {program} done")
     return decryptedPWDManager
         
     
@@ -218,6 +239,7 @@ def printPrograms(passwordManager):
     
 #main code loop    
 if __name__ == "__main__":
+    print("\nHi! Welcome to the password manager! ")
     if os.path.exists("data.json"):
         with open("data.json", "r") as p:
             encryptedPWDManager = json.load(p)
@@ -227,19 +249,23 @@ if __name__ == "__main__":
     else:
         passwordManager = {}
     while True:
-        options = input("\nWhat would you like to do? \n 1: Computer creates secure password \n 2: Store new username and password \n 3: Delete a password \n 4: Change your username or password \n 5: Display all passwords \n 6: Delete Password File (PERMANNENT) \n 7: Copy Password to Clipboard \n 8: End Program and save work\n Choice: ")
+        options = input("\nSelect an action! \n 1: Computer creates secure password \n 2: Store new username and password \n 3: Delete a password \n 4: Change your username or password \n 5: Display all passwords \n 6: Delete Password File (PERMANNENT) \n 7: Score Password \n 8: Copy Password to Clipboard \n 9: End Program and save work\n Choice: ")
         newprintLn()
         
         #lets computer create new password
         if options =="1":
             c = input("Would you like your password to be a specific length? (Y or N)  ").upper()
             if c=="Y":
-                x = input("Enter length of password: ")
-                if x.isdigit():
-                    rdmt2(int(x))
-                else: print ("\033[321Should be integer\033[0m")
+                x = input("Enter length of password. It must be below 150: ")
+                if x.isdigit() and int(x)<150:
+                    pwd = rdmt2(int(x))
+                    pwdAppend1(pwd)
+                else: 
+                    print ("\033[33mLength should be integer below 150\033[0m")
             elif c=="N":
-                rdmt2(rdmt1())
+                pwd = rdmt2(rdmt1())
+                pwdAppend1(pwd)
+
         
         #adds new password to manager  
         elif options == "2":
@@ -265,15 +291,23 @@ if __name__ == "__main__":
             if reasignedSet in passwordManager: 
                 choice = input("Would you like to change the username or password? ").upper()
                 if choice == "PASSWORD":
-                    newPwd = input("\nType in your new password: ")
+                    newPwd = input("Type in your new password: ")
                     username, a = passwordManager[reasignedSet]
-                    passwordManager[reasignedSet] = (username, newPwd)
-                    print(f"\033[33m{reasignedSet} password updated \033[0m")
+
+                    if newPwd == "":
+                        print(f"\033[31mNo Password Given\033[0m")
+                    else:
+                        passwordManager[reasignedSet] = (username, newPwd)
+                        print(f"\033[33m{reasignedSet} password updated \033[0m")
+                        
                 elif choice =="USERNAME":
                     newUname = input("\nType in your new username: ")
                     a , pwd = passwordManager[reasignedSet]
-                    passwordManager[reasignedSet] = (newUname, pwd)
-                    print(f"\033[33m{reasignedSet} username updated \033[0m")
+                    if newUname == "":
+                        print(f"\033[31mNo Username Given.\033[0m")
+                    else:
+                        passwordManager[reasignedSet] = (newUname, pwd)
+                        print(f"\033[33m{reasignedSet} username updated \033[0m")
                 else:
                     print(f"\033[31mInvalid choice\033[0m")
                     
@@ -292,7 +326,29 @@ if __name__ == "__main__":
                 passwordManager = {}
                 os.remove("data.json")
                 
-        elif options =="7":
+        #scores password
+        elif options == "7":
+            choice = input("Would you like to enter your own password, use one in the passwordManager, or score one made by the computer? (OWN,PASSWORDMANAGER,COMPUTER): ").upper()
+            
+            if choice == "COMPUTER":
+                pwd = rdmt2(rdmt1())
+                print(f"Your password has a score of: {checkStrength(pwd)}%")      
+                
+            elif choice == "PASSWORDMANAGER":
+                print("\nHere are the current passwords in the password manager: ")
+                printPasswords(passwordManager) 
+                
+                programChosen = input("Which password would you like to access? Enter program name: ").upper()
+                if programChosen in passwordManager:
+                    a,b = passwordManager[programChosen]
+                    print(f"Your password has a score of: {checkStrength(b)}")      
+                else:
+                    print("\033[31mPassword not found.\033[0m")
+            elif choice =="OWN":
+                pwd = input("Enter password to be scored: ")
+                print(f"Your password has a score of: {checkStrength(pwd)}")      
+                 
+        elif options =="8":
             printPrograms(passwordManager)
             copyProgram = input("\nWhich password would you like to access. Enter program name: ").upper()
             if copyProgram in passwordManager:
@@ -302,7 +358,7 @@ if __name__ == "__main__":
             else:
                 print(f"\033[31mPassword not found under written program\033[0m")  
             
-        elif options == "8":
+        elif options == "9":
             print(f"\033[032mCode Completion - Encrypted passwords added to data.json file\033[0m")
             break
         
@@ -310,4 +366,3 @@ if __name__ == "__main__":
             print(f"\033[031mInvalid Command. Please try again\033[0m")
     
     savePasswords(passwordManager)
-
