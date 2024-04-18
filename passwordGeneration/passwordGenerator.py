@@ -104,7 +104,7 @@ def pwdAppend2():
   
 #check password strength
 def checkStrength(pwd):
-    score,diC,upC,lcC=0,0,0,0
+    score,diC,upC,lcC,arr=0,0,0,0,[]
     threshold = int(len(pwd)/3)
     pwdList = list(pwd)
     for i in pwdList:
@@ -122,7 +122,14 @@ def checkStrength(pwd):
     print(f"lwC: {lcC/len(pwd)*100}%") 
     print(f"Differences: {differences}")
     
+    
     score = max(0, 100-totalQuant)
+    for i in range(100):
+        if i<int(score):
+            arr.append("-")
+        else:
+            arr.append("")
+    print(arr)
     return score
 #checks for errors in password
 def pwdCheckCons(pwd,num,statusDict): 
@@ -249,6 +256,7 @@ if __name__ == "__main__":
     else:
         passwordManager = {}
     while True:
+        print("░░░░░░░░░░░░░░░░░░░")
         options = input("\nSelect an action! \n 1: Computer creates secure password \n 2: Store new username and password \n 3: Delete a password \n 4: Change your username or password \n 5: Display all passwords \n 6: Delete Password File (PERMANNENT) \n 7: Score Password \n 8: Copy Password to Clipboard \n 9: End Program and save work\n Choice: ")
         newprintLn()
         
@@ -364,5 +372,4 @@ if __name__ == "__main__":
         
         else:
             print(f"\033[031mInvalid Command. Please try again\033[0m")
-    
     savePasswords(passwordManager)

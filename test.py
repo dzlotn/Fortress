@@ -48,6 +48,7 @@ def checkStrength(pwd):
             lcC +=1 
     differences = (abs(threshold -diC), abs(threshold-upC), abs(threshold-lcC))
     totalSub = sum(differences)
+    
     print(f"diC: {diC/len(pwd)*100}%") 
     print(f"upC: {upC/len(pwd)*100}%") 
     print(f"dwC: {lcC/len(pwd)*100}%") 
