@@ -302,7 +302,10 @@ if __name__ == "__main__":
                 pwd = pwdCreation(primeNumGen())
                 pwdAppend1(pwd)
                 logInfo("Password created and added to manager",options,20)
-        
+            else:
+                print(f"\033[31mInvalid choice\033[0m")
+                logInfo(f"Invalid Response (Choices were Y or N)",options,40)   
+                     
         #adds new password to manager  
         elif options == "2":
             program = pwdAppend2()
@@ -434,7 +437,7 @@ if __name__ == "__main__":
             break
         
         else:
-            logInfo(f"Command \"{options}\" not found")
+            logInfo(f"Command \"{options}\" not found",0, 40)
             print(f"\033[031mInvalid Command. Please try again\033[0m")
     savePasswords(passwordManager)
     logInfo(f"All data saved",0,20)     
