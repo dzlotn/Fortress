@@ -8,6 +8,7 @@ import secrets
 import json
 import os
 import subprocess 
+import logging 
 #creates blank line of space
 def newprintLn():
     print("\n----------------------\n")
@@ -102,6 +103,7 @@ def pwdAppend2():
     # pwdE = encryptPassword(pwd)
     passwordManager[prog.upper()] = [uname,pwd]
     print(f"\033[32mPassword ({pwd}) added to password manager under program ({prog.upper()})\033[0m")
+    return prog
   
 #check password strength
 def checkStrength(pwd):
@@ -242,7 +244,7 @@ def savePasswords(passwordManager):
         uname, pwd = data
         encryptedPasswordManager[program] = [uname, encryptPassword(pwd)]
          
-    with open('data.json', 'w') as f:
+    with open("passwordGeneration/data.json", 'w') as f:
         json.dump(encryptedPasswordManager, f)
 
 
@@ -252,20 +254,36 @@ def printPrograms(passwordManager):
     for i in passwordManager:
         print(f"\033[34m{i}\033[0m")
 
+#backend program for logging info/error messages
+def logInfo(action, option, level):
+    levelDic = {10: "debug", 20: "info",30:"warning",40:"error", 50:"critical"}
+    funcName = levelDic.get(level)
+    if funcName:
+        logging_function = getattr(logging, funcName)
+        logging_function(f"Action: \"{action}\" Option: {option}")
+    else:
+        print("ERROR 202: INVALID LOG LEVEL")
     
 #main code loop    
 if __name__ == "__main__":
+    if not logging.getLogger().hasHandlers():
+        logging.basicConfig(filename='passwordGeneration/password_manager.log', level=logging.INFO, format='%(asctime)s - %(levelname)s: %(message)s')
+        logInfo("New Log File Created",0,50)
+        
     print("\nHi! Welcome to the password manager! ")
-    if os.path.exists("data.json"):
-        with open("data.json", "r") as p:
+    if os.path.exists("passwordGeneration/data.json"):
+        with open("passwordGeneration/data.json", "r") as p:
             encryptedPWDManager = json.load(p)
             passwordManager = massDecryption(encryptedPWDManager)
+            logInfo("Password manager accessed and decrypted", 0, 20)      
             # passwordManager ={program:[username, decryptPasswords(encryptedPassword)] for program, [username, encryptedPassword] in encryptedPasswordManager.items()}
             
     else:
         passwordManager = {}
+        logInfo("New password manager created", 0, 20)
+            
     while True:
-        
+            
         options = input("\nSelect an action! \n 1: Computer creates secure password \n 2: Store new username and password \n 3: Delete a password \n 4: Change your username or password \n 5: Display all passwords \n 6: Delete Password File (PERMANNENT) \n 7: Score Password \n 8: Copy Password to Clipboard \n 9: End Program and save work\n Choice: ")
         newprintLn()
         
@@ -277,17 +295,19 @@ if __name__ == "__main__":
                 if x.isdigit() and int(x)<150:
                     pwd = pwdCreation(int(x))
                     pwdAppend1(pwd)
+                    logInfo("Password created and added to manager",options,20)
                 else: 
                     print ("\033[33mLength should be integer below 150\033[0m")
             elif c=="N":
                 pwd = pwdCreation(primeNumGen())
                 pwdAppend1(pwd)
-
+                logInfo("Password created and added to manager",options,20)
         
         #adds new password to manager  
         elif options == "2":
-            pwdAppend2()
-            
+            program = pwdAppend2()
+            logInfo(f"Stored username and password to {program} ",options,20)
+
         #runs delete password code
         elif options == "3":
             print("Password Manager: \n")
@@ -296,9 +316,12 @@ if __name__ == "__main__":
             if deletedSet in passwordManager: 
                 del passwordManager[deletedSet]
                 print(f"\033[31mPassword Deleted \033[0m")
-
+                logInfo(f"Deleted Password from {program} ",options,20)
+                
             else:
                 print(f"\033[31m\nPassword not found under written program\033[0m")
+                logInfo(f"Program \"{program}\" not found ",options,40)
+
         
         #allows for password reasignment     
         elif options =="4":
@@ -313,25 +336,37 @@ if __name__ == "__main__":
 
                     if newPwd == "":
                         print(f"\033[31mNo Password Given\033[0m")
+                        logInfo(f"Password not given for program \"{reasignedSet}\"",options,40)
+
                     else:
                         passwordManager[reasignedSet] = (username, newPwd)
+                        logInfo(f"Password changed for program \"{reasignedSet}\"",options,20)
                         print(f"\033[33m{reasignedSet} password updated \033[0m")
+
+                        
                         
                 elif choice =="USERNAME":
                     newUname = input("\nType in your new username: ")
                     a , pwd = passwordManager[reasignedSet]
                     if newUname == "":
+                        logInfo(f"Username not given for program \"{reasignedSet}\"",options,40)
                         print(f"\033[31mNo Username Given.\033[0m")
+
                     else:
                         passwordManager[reasignedSet] = (newUname, pwd)
+                        logInfo(f"Username changed for program \"{reasignedSet}\"",options,20)
                         print(f"\033[33m{reasignedSet} username updated \033[0m")
                 else:
                     print(f"\033[31mInvalid choice\033[0m")
+                    logInfo(f"Invalid Response (Choices were USERNAME and PASSWORD)",options,40)
+
                     
             else:
-                print(f"\033[31mPassword not found under written program\033[0m")
+                logInfo(f"Program \"{reasignedSet}\" not found in manager",options,40)
+                print(f"\033[31mProgram not found in password manager\033[0m")
              
         elif options=="5":
+            logInfo(f"Passwords printed to terminal",options,20)
             print("\nHere are the current passwords in the password manager: ")
             printPasswords(passwordManager)
         
@@ -340,8 +375,11 @@ if __name__ == "__main__":
             check = input("Are you want to delete the password file. This is a permament action! (Y or N)\n").upper()
             if check == "Y":
                 print(f"\033[31mPassword Data Removed\033[0m")
+                logInfo(f"Password Manager cleared",options,30)
                 passwordManager = {}
-                os.remove("data.json")
+                os.remove("passwordGeneration/data.json")
+                logInfo(f"Password File Deleted",options,30)
+
                 
         #scores password
         elif options == "7":
@@ -351,28 +389,32 @@ if __name__ == "__main__":
                 pwd = pwdCreation(primeNumGen())
                 strengthScore = checkStrength(pwd)
                 print(f"Your password has a score of: \033[1m{strengthScore}%\033[0m")
-                print(f"Graphical Representation:  [{printStrengthGraphically(strengthScore)}]")      
+                print(f"Graphical Representation:  [{printStrengthGraphically(strengthScore)}]")
+                logInfo(f"Score calculated and printed for password generated by {choice}",options,20)
+  
                 
             elif choice == "PASSWORDMANAGER":
                 print("\nHere are the current passwords in the password manager: ")
                 printPasswords(passwordManager) 
-                
+                logInfo(f"Passwords printed to terminal",options,20)
                 programChosen = input("Which password would you like to access? Enter program name: ").upper()
                 if programChosen in passwordManager:
                     a,b  = passwordManager[programChosen]
                     strengthScore= checkStrength(b)         
                     print(f"Your password has a score of: \033[1m{strengthScore}%\033[0m")
-                    print(f"Graphical Representation:  [{printStrengthGraphically(strengthScore)}]")      
-
+                    print(f"Graphical Representation:  [{printStrengthGraphically(strengthScore)}]")  
+                    logInfo(f"Score calculated and printed for password in program \"{programChosen}\"",options,20)
                     
                 else:
-                    print("\033[31mPassword not found.\033[0m")
+                    logInfo(f"Program \"{programChosen}\" not found in manager", options,40)
+                    print("\033[31mProgram not found.\033[0m")
+                    
             elif choice =="OWN":
                 pwd = input("Enter password to be scored: ")
                 strengthScore = checkStrength(pwd)
                 print(f"Your password has a score of: \033[1m{strengthScore}%\033[0m")
-                print(f"Graphical Representation:  [{printStrengthGraphically(strengthScore)}]")      
-
+                print(f"Graphical Representation:  [{printStrengthGraphically(strengthScore)}]")  
+                logInfo(f"Score calculated and printed for password inputted by user",options,20)
                       
         elif options =="8":
             printPrograms(passwordManager)
@@ -381,13 +423,18 @@ if __name__ == "__main__":
                 a,pwdCpy = passwordManager[copyProgram]
                 copyToClipboard(pwdCpy)  
                 print(f"\033[33mPassword ({pwdCpy}) Copied to Clipboard\033[0m")
+                logInfo(f"Password from program \"{copyProgram}\" copied to clipboard",options,20)
+
             else:
-                print(f"\033[31mPassword not found under written program\033[0m")  
+                logInfo(f"Program \"{copyProgram}\" not found",options, 40)
+                print(f"\033[31mProgram not found in password manager\033[0m")  
             
         elif options == "9":
             print(f"\033[032mCode Completion - Encrypted passwords added to data.json file\033[0m")
             break
         
         else:
+            logInfo(f"Command \"{options}\" not found")
             print(f"\033[031mInvalid Command. Please try again\033[0m")
     savePasswords(passwordManager)
+    logInfo(f"All data saved",0,20)     
