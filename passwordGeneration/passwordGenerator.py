@@ -18,7 +18,7 @@ def copyToClipboard(txt):
     return subprocess.check_call(cmd, shell=True)
 
 #finds random prime number for len
-def rdmt1():
+def primeNumGen():
     check = True
     while True:
         num = random.randint(10,100)
@@ -36,8 +36,8 @@ def rdmt1():
         else:
             check=True
             
-#creates password using sets of characters and pwd length found by rdmt1                
-def rdmt2(num):
+#creates password using sets of characters and pwd length found by primeNumGen                
+def pwdCreation(num):
     #global variables
     letters = "abcdefghijklmnopqrstuvwxyz"
     numbers = "1234567890"
@@ -79,13 +79,14 @@ def rdmt2(num):
         # print(f"\033[32m{pwdf}\033[0m")
         return pwdf
     elif ans=="N":
-        rdmt2(num)
+        pwdCreation(num)
     
     else:
         print("Invalid Response. \033[033m Generating new password... \033[0m")
-        rdmt2(num)   
+        pwdCreation(num)   
                
     return pwdf
+
 #asigns password to program 
 def pwdAppend1(pwdf):
     prog = input("\nWhat program would you like to assign the password to? " )
@@ -117,20 +118,26 @@ def checkStrength(pwd):
     differences = (abs(threshold -diC), abs(threshold-upC), abs(threshold-lcC))
     totalQuant =  round(float(sum(differences)/len(pwd)),4)*100
     
-    print(f"intC: {diC/len(pwd)*100}%") 
+    print(f"\nintC: {diC/len(pwd)*100}%") 
     print(f"upC: {upC/len(pwd)*100}%") 
     print(f"lwC: {lcC/len(pwd)*100}%") 
-    print(f"Differences: {differences}")
+    print(f"Differences: {differences}\n")
     
     
     score = max(0, 100-totalQuant)
-    for i in range(100):
-        if i<int(score):
-            arr.append("-")
-        else:
-            arr.append("")
-    print(arr)
-    return score
+    # for i in range(100):
+    #     if i<int(score):
+    #         arr.append("-")
+    #     else:
+    #         arr.append("")
+    # print(arr)
+    return round(score,3)
+def printStrengthGraphically(score):
+    scoreFixed = int(round(score/10))
+    graphicP1= "█"*scoreFixed
+    graphicP2 = "░"*(max(10-scoreFixed,0))
+    return graphicP1+graphicP2
+    
 #checks for errors in password
 def pwdCheckCons(pwd,num,statusDict): 
    
@@ -205,6 +212,7 @@ def encryptPassword(pwd):
         encrypted_pwd.append(chr(new_ord))
     return "".join(encrypted_pwd)
 
+#decrypts single password
 def decryptPassword(pwd):
     decrypted_pwd = []
     for i, char in enumerate(pwd):
@@ -215,6 +223,7 @@ def decryptPassword(pwd):
         decrypted_pwd.append(chr(new_ord))
     return "".join(decrypted_pwd)
 
+#decrypts the entire password manager (done in backend at beginning of code loop)
 def massDecryption(passwordManager):
     decryptedPWDManager = {}
     for program, data in passwordManager.items():
@@ -256,7 +265,7 @@ if __name__ == "__main__":
     else:
         passwordManager = {}
     while True:
-        print("░░░░░░░░░░░░░░░░░░░")
+        
         options = input("\nSelect an action! \n 1: Computer creates secure password \n 2: Store new username and password \n 3: Delete a password \n 4: Change your username or password \n 5: Display all passwords \n 6: Delete Password File (PERMANNENT) \n 7: Score Password \n 8: Copy Password to Clipboard \n 9: End Program and save work\n Choice: ")
         newprintLn()
         
@@ -266,12 +275,12 @@ if __name__ == "__main__":
             if c=="Y":
                 x = input("Enter length of password. It must be below 150: ")
                 if x.isdigit() and int(x)<150:
-                    pwd = rdmt2(int(x))
+                    pwd = pwdCreation(int(x))
                     pwdAppend1(pwd)
                 else: 
                     print ("\033[33mLength should be integer below 150\033[0m")
             elif c=="N":
-                pwd = rdmt2(rdmt1())
+                pwd = pwdCreation(primeNumGen())
                 pwdAppend1(pwd)
 
         
@@ -339,8 +348,10 @@ if __name__ == "__main__":
             choice = input("Would you like to enter your own password, use one in the passwordManager, or score one made by the computer? (OWN,PASSWORDMANAGER,COMPUTER): ").upper()
             
             if choice == "COMPUTER":
-                pwd = rdmt2(rdmt1())
-                print(f"Your password has a score of: {checkStrength(pwd)}%")      
+                pwd = pwdCreation(primeNumGen())
+                strengthScore = checkStrength(pwd)
+                print(f"Your password has a score of: \033[1m{strengthScore}%\033[0m")
+                print(f"Graphical Representation:  [{printStrengthGraphically(strengthScore)}]")      
                 
             elif choice == "PASSWORDMANAGER":
                 print("\nHere are the current passwords in the password manager: ")
@@ -348,14 +359,21 @@ if __name__ == "__main__":
                 
                 programChosen = input("Which password would you like to access? Enter program name: ").upper()
                 if programChosen in passwordManager:
-                    a,b = passwordManager[programChosen]
-                    print(f"Your password has a score of: {checkStrength(b)}")      
+                    a,b  = passwordManager[programChosen]
+                    strengthScore= checkStrength(b)         
+                    print(f"Your password has a score of: \033[1m{strengthScore}%\033[0m")
+                    print(f"Graphical Representation:  [{printStrengthGraphically(strengthScore)}]")      
+
+                    
                 else:
                     print("\033[31mPassword not found.\033[0m")
             elif choice =="OWN":
                 pwd = input("Enter password to be scored: ")
-                print(f"Your password has a score of: {checkStrength(pwd)}")      
-                 
+                strengthScore = checkStrength(pwd)
+                print(f"Your password has a score of: \033[1m{strengthScore}%\033[0m")
+                print(f"Graphical Representation:  [{printStrengthGraphically(strengthScore)}]")      
+
+                      
         elif options =="8":
             printPrograms(passwordManager)
             copyProgram = input("\nWhich password would you like to access. Enter program name: ").upper()
