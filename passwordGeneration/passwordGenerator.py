@@ -179,7 +179,8 @@ def pwdCheckCons(pwd,num,statusDict):
     if pwdCheckKeyboard(pwd,num,statusDict) == False:
         return False
     if checkCommonWords1(pwd,statusDict) == False:
-        return False
+        for i in range(100):
+            print(f"PWD = {pwd}")
     print(f"Password Status: {statusDict[True]}")
     return True 
 
@@ -223,16 +224,20 @@ def pwdCheckKeyboard(pwd,num,statusDict):
 def checkCommonWords1(pwd,statusDict):
     commonWords = open("passwordGeneration/data/commonWords.txt","r").read()
     wordsSplitList = commonWords.splitlines()
-    if pwd in wordsSplitList: 
-        print(f"\033[31mCommon Word Found: {pwd} Password Status: {statusDict[False]}\033[33m\nGenerating New Password...\033[0m")
-        return False
+    for i in wordsSplitList:
+        if i in pwd: 
+            print(f"\033[31mCommon Word Found: ({i}) Password Status: {statusDict[False]}\033[33m\nGenerating New Password...\033[0m")
+            return False
     else: return True
             
 def checkCommonWords2(pwd):
     commonWords = open("passwordGeneration/data/commonWords.txt","r").read()
     wordsSplitList = commonWords.splitlines()
-    if pwd in wordsSplitList: return False
-    else: return True
+    for i in wordsSplitList:
+        if i in pwd: 
+            print(f"\033[31mCommon Word Found: ({i})")
+            return False
+    return True
          
 #prints passwords in nice table format           
 def printPasswords(passwordManager):
