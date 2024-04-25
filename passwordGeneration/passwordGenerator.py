@@ -83,7 +83,7 @@ def pwdCreation(num):
         pwdCreation(num)
     
     else:
-        print("Invalid Response. \033[033m Generating new password... \033[0m")
+        print("\n Invalid Response.\n \033[033m Generating new password... \033[0m")
         pwdCreation(num)   
                
     return pwdf
@@ -107,6 +107,10 @@ def pwdAppend2():
   
 #check password strength
 def checkStrength(pwd):
+    if not checkCommonWords(pwd):
+        print("\033[31m\nWARNING: COMMON PASSWORD\033[0m")
+        return 0
+
     score,diC,upC,lcC,arr=0,0,0,0,[]
     threshold = int(len(pwd)/3)
     pwdList = list(pwd)
@@ -119,7 +123,6 @@ def checkStrength(pwd):
             lcC +=1 
     differences = (abs(threshold -diC), abs(threshold-upC), abs(threshold-lcC))
     totalQuant =  round(float(sum(differences)/len(pwd)),4)*100
-    
     print(f"\nintC: {diC/len(pwd)*100}%") 
     print(f"upC: {upC/len(pwd)*100}%") 
     print(f"lwC: {lcC/len(pwd)*100}%") 
@@ -134,6 +137,7 @@ def checkStrength(pwd):
     #         arr.append("")
     # print(arr)
     return round(score,3)
+
 def printStrengthGraphically(score):
     scoreFixed = int(round(score/10))
     graphicP1= "█"*scoreFixed
@@ -153,14 +157,15 @@ def pwdCheckCons(pwd,num,statusDict):
             print(f"\033[31mConsecutive Characters in ASCII Found: {pwd[i]} and {pwd[i+1]}\n\033[0mPassword Status:{statusDict[False]}\033[33m\nGenerating New Password...\033[0m")
             return False
     
-    if pwdCheckKeyboardRows(pwd,num,statusDict) == False:
+    if pwdCheckKeyboard(pwd,num,statusDict) == False:
         return False
-    
+    if checkCommonWords(pwd,statusDict) == False:
+        return False
     print(f"Password Status: {statusDict[True]}")
     return True 
 
 #checks if consecutive characters in the password are next to eachother on the keyboard
-def pwdCheckKeyboardRows(pwd,num,statusDict):
+def pwdCheckKeyboard(pwd,num,statusDict):
     pwdString = "".join(pwd)
     keyboardLayoutRow = {
         "r1": "qwertyuiop",
@@ -189,13 +194,27 @@ def pwdCheckKeyboardRows(pwd,num,statusDict):
                 if abs(row.index(charFst) -row.index(charNxt)) ==1:
                     print(f"\033[31mClose Characters on Keyboard Found (row wise): {charFst} and {charNxt}\n\033[0mPassword Status: {statusDict[False]}\033[33m\nGenerating New Password...\033[0m")
                     return False
+                
         for row in keyboardLayoutCol.values():
             if charFst in row and charNxt in row:
                 if abs(row.index(charFst)- row.index(charNxt))==1:
                     print(f"\033[31mClose Characters on Keyboard Found (column wise): {charFst} and {charNxt}\n\033[0mPassword Status: {statusDict[False]}\033[33m\nGenerating New Password...\033[0m")
                     return False 
             
- 
+def checkCommonWords(pwd,statusDict):
+    commonWords = open("passwordGeneration/data/commonWords.txt","r").read()
+    wordsSplitList = commonWords.splitlines()
+    if pwd in wordsSplitList: 
+        print(f"\033[31mCommon Word Found: {pwd} Password Status: {statusDict[False]}\033[33m\nGenerating New Password...\033[0m")
+        return False
+    else: return True
+            
+def checkCommonWords(pwd):
+    commonWords = open("passwordGeneration/data/commonWords.txt","r").read()
+    wordsSplitList = commonWords.splitlines()
+    if pwd in wordsSplitList: return False
+    else: return True
+         
 #prints passwords in nice table format           
 def printPasswords(passwordManager):
     # decryptPasswords(passwordManager)
@@ -236,7 +255,7 @@ def massDecryption(passwordManager):
         
     
      
-#saves the passwords in a data.json file
+#saves the passwords in a data/data.json file
 def savePasswords(passwordManager):
     #encrypts data
     encryptedPasswordManager = {}
@@ -244,7 +263,7 @@ def savePasswords(passwordManager):
         uname, pwd = data
         encryptedPasswordManager[program] = [uname, encryptPassword(pwd)]
          
-    with open("passwordGeneration/data.json", 'w') as f:
+    with open("passwordGeneration/data/data.json", 'w') as f:
         json.dump(encryptedPasswordManager, f)
 
 
@@ -267,12 +286,12 @@ def logInfo(action, option, level):
 #main code loop    
 if __name__ == "__main__":
     if not logging.getLogger().hasHandlers():
-        logging.basicConfig(filename='passwordGeneration/password_manager.log', level=logging.INFO, format='%(asctime)s - %(levelname)s: %(message)s')
+        logging.basicConfig(filename='passwordGeneration/data/password_manager.log', level=logging.INFO, format='%(asctime)s - %(levelname)s: %(message)s')
         logInfo("New Log File Created",0,50)
         
     print("\nHi! Welcome to the password manager! ")
-    if os.path.exists("passwordGeneration/data.json"):
-        with open("passwordGeneration/data.json", "r") as p:
+    if os.path.exists("passwordGeneration/data/data.json"):
+        with open("passwordGeneration/data/data.json", "r") as p:
             encryptedPWDManager = json.load(p)
             passwordManager = massDecryption(encryptedPWDManager)
             logInfo("Password manager accessed and decrypted", 0, 20)      
@@ -380,7 +399,7 @@ if __name__ == "__main__":
                 print(f"\033[31mPassword Data Removed\033[0m")
                 logInfo(f"Password Manager cleared",options,30)
                 passwordManager = {}
-                os.remove("passwordGeneration/data.json")
+                os.remove("passwordGeneration/data/data.json")
                 logInfo(f"Password File Deleted",options,30)
 
                 
@@ -418,7 +437,10 @@ if __name__ == "__main__":
                 print(f"Your password has a score of: \033[1m{strengthScore}%\033[0m")
                 print(f"Graphical Representation:  [{printStrengthGraphically(strengthScore)}]")  
                 logInfo(f"Score calculated and printed for password inputted by user",options,20)
-                      
+            else:
+                print(f"\033[31mInvalid choice\033[0m")
+                logInfo(f"Invalid Response (Choices were OWN,PASSWORDMANAGER, and COMPUTER)",options,40)
+          
         elif options =="8":
             printPrograms(passwordManager)
             copyProgram = input("\nWhich password would you like to access. Enter program name: ").upper()
@@ -433,7 +455,7 @@ if __name__ == "__main__":
                 print(f"\033[31mProgram not found in password manager\033[0m")  
             
         elif options == "9":
-            print(f"\033[032mCode Completion - Encrypted passwords added to data.json file\033[0m")
+            print(f"\033[032mCode Completion - Encrypted passwords added to data/data.json file\033[0m")
             break
         
         else:
