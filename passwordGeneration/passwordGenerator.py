@@ -9,6 +9,8 @@ import json
 import os
 import subprocess 
 import logging 
+import math
+
 #creates blank line of space
 def newprintLn():
     print("\n----------------------\n")
@@ -51,7 +53,7 @@ def pwdCreation(num):
         prev_type = None
         consecutive_count=0
         for i in range(num):
-            while True:
+            while True: 
                 case = secrets.randbelow(3)
                 if  case == 0 and (prev_type != 0 or consecutive_count < 3):  # Check if the previous character was not a number or consecutive count is less than 3
                     pwd.append(numbers[random.randint(0, 9)])
@@ -104,10 +106,10 @@ def pwdAppend2():
     passwordManager[prog.upper()] = [uname,pwd]
     print(f"\033[32mPassword ({pwd}) added to password manager under program ({prog.upper()})\033[0m")
     return prog
-  
+
 #check password strength
-def checkStrength(pwd):
-    if not checkCommonWords(pwd):
+def checkStrength(pwd,printing):
+    if not checkCommonWords2(pwd):
         print("\033[31m\nWARNING: COMMON PASSWORD\033[0m")
         return 0
 
@@ -123,27 +125,44 @@ def checkStrength(pwd):
             lcC +=1 
     differences = (abs(threshold -diC), abs(threshold-upC), abs(threshold-lcC))
     totalQuant =  round(float(sum(differences)/len(pwd)),4)*100
-    print(f"\nintC: {diC/len(pwd)*100}%") 
-    print(f"upC: {upC/len(pwd)*100}%") 
-    print(f"lwC: {lcC/len(pwd)*100}%") 
-    print(f"Differences: {differences}\n")
     
-    
+    if printing ==1:
+        print(f"\nintC: {diC/len(pwd)*100}%") 
+        print(f"upC: {upC/len(pwd)*100}%") 
+        print(f"lwC: {lcC/len(pwd)*100}%") 
+        print(f"Differences: {differences}")
+        (a,b) = calculatePasswordEntropy(pwd)
+        print(f"Password Entropy: {a}")
+        print(f"Number of Guesses needed to Find Password: {b}\n")
+         
     score = max(0, 100-totalQuant)
-    # for i in range(100):
-    #     if i<int(score):
-    #         arr.append("-")
-    #     else:
-    #         arr.append("")
-    # print(arr)
     return round(score,3)
 
+#prints the password strength using a bar
 def printStrengthGraphically(score):
     scoreFixed = int(round(score/10))
     graphicP1= "█"*scoreFixed
     graphicP2 = "░"*(max(10-scoreFixed,0))
     return graphicP1+graphicP2
-    
+
+#calculates and returns password entropy
+def calculatePasswordEntropy(pwd):
+    charamt = 0
+    charPrices = [26,26,9]
+    charCheck = [False,False,False]
+    for i in pwd:
+        if i.islower():
+            charCheck[0] = True
+        elif i.isupper():
+            charCheck[1] = True
+        elif i.isdigit():
+            charCheck[2] = True
+    for a in range(3):
+        if charCheck[a]:
+            charamt+=charPrices[a]        
+    entropy = math.log2(charamt)*len(pwd)
+    return entropy,round(math.pow(2,entropy),5)
+
 #checks for errors in password
 def pwdCheckCons(pwd,num,statusDict): 
    
@@ -159,7 +178,7 @@ def pwdCheckCons(pwd,num,statusDict):
     
     if pwdCheckKeyboard(pwd,num,statusDict) == False:
         return False
-    if checkCommonWords(pwd,statusDict) == False:
+    if checkCommonWords1(pwd,statusDict) == False:
         return False
     print(f"Password Status: {statusDict[True]}")
     return True 
@@ -201,7 +220,7 @@ def pwdCheckKeyboard(pwd,num,statusDict):
                     print(f"\033[31mClose Characters on Keyboard Found (column wise): {charFst} and {charNxt}\n\033[0mPassword Status: {statusDict[False]}\033[33m\nGenerating New Password...\033[0m")
                     return False 
             
-def checkCommonWords(pwd,statusDict):
+def checkCommonWords1(pwd,statusDict):
     commonWords = open("passwordGeneration/data/commonWords.txt","r").read()
     wordsSplitList = commonWords.splitlines()
     if pwd in wordsSplitList: 
@@ -209,7 +228,7 @@ def checkCommonWords(pwd,statusDict):
         return False
     else: return True
             
-def checkCommonWords(pwd):
+def checkCommonWords2(pwd):
     commonWords = open("passwordGeneration/data/commonWords.txt","r").read()
     wordsSplitList = commonWords.splitlines()
     if pwd in wordsSplitList: return False
@@ -281,8 +300,7 @@ def logInfo(action, option, level):
         logging_function = getattr(logging, funcName)
         logging_function(f"Action: \"{action}\" Option: {option}")
     else:
-        print("ERROR 202: INVALID LOG LEVEL")
-    
+        print("ERROR 202: INVALID LOG LEVEL") 
 #main code loop    
 if __name__ == "__main__":
     if not logging.getLogger().hasHandlers():
@@ -303,7 +321,7 @@ if __name__ == "__main__":
             
     while True:
             
-        options = input("\nSelect an action! \n 1: Computer creates secure password \n 2: Store new username and password \n 3: Delete a password \n 4: Change your username or password \n 5: Display all passwords \n 6: Delete Password File (PERMANNENT) \n 7: Score Password \n 8: Copy Password to Clipboard \n 9: End Program and save work\n Choice: ")
+        options = input("\nSelect an action! \n 1: Computer creates secure password \n 2: Store new username and password \n 3: Delete a password \n 4: Change your username or password \n 5: Display all passwords \n 6: Delete Password File (PERMANNENT) \n 7: Score Password \n 8: Copy Password to Clipboard \n 9: End program and save work\n Choice: ")
         newprintLn()
         
         #lets computer create new password
@@ -338,11 +356,11 @@ if __name__ == "__main__":
             if deletedSet in passwordManager: 
                 del passwordManager[deletedSet]
                 print(f"\033[31mPassword Deleted \033[0m")
-                logInfo(f"Deleted Password from {program} ",options,20)
+                logInfo(f"Deleted Password from {deletedSet} ",options,20)
                 
             else:
                 print(f"\033[31m\nPassword not found under written program\033[0m")
-                logInfo(f"Program \"{program}\" not found ",options,40)
+                logInfo(f"Program \"{deletedSet}\" not found ",options,40)
 
         
         #allows for password reasignment     
@@ -409,7 +427,7 @@ if __name__ == "__main__":
             
             if choice == "COMPUTER":
                 pwd = pwdCreation(primeNumGen())
-                strengthScore = checkStrength(pwd)
+                strengthScore = checkStrength(pwd,1)
                 print(f"Your password has a score of: \033[1m{strengthScore}%\033[0m")
                 print(f"Graphical Representation:  [{printStrengthGraphically(strengthScore)}]")
                 logInfo(f"Score calculated and printed for password generated by {choice}",options,20)
@@ -419,10 +437,10 @@ if __name__ == "__main__":
                 print("\nHere are the current passwords in the password manager: ")
                 printPasswords(passwordManager) 
                 logInfo(f"Passwords printed to terminal",options,20)
-                programChosen = input("Which password would you like to access? Enter program name: ").upper()
+                programChosen = input("\nWhich password would you like to access? Enter program name: ").upper()
                 if programChosen in passwordManager:
                     a,b  = passwordManager[programChosen]
-                    strengthScore= checkStrength(b)         
+                    strengthScore= checkStrength(b,1)         
                     print(f"Your password has a score of: \033[1m{strengthScore}%\033[0m")
                     print(f"Graphical Representation:  [{printStrengthGraphically(strengthScore)}]")  
                     logInfo(f"Score calculated and printed for password in program \"{programChosen}\"",options,20)
@@ -433,7 +451,7 @@ if __name__ == "__main__":
                     
             elif choice =="OWN":
                 pwd = input("Enter password to be scored: ")
-                strengthScore = checkStrength(pwd)
+                strengthScore = checkStrength(pwd,1)
                 print(f"Your password has a score of: \033[1m{strengthScore}%\033[0m")
                 print(f"Graphical Representation:  [{printStrengthGraphically(strengthScore)}]")  
                 logInfo(f"Score calculated and printed for password inputted by user",options,20)
