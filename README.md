@@ -1,1 +1,1 @@
-Password Manager Program utilizing React and python
+Password Manager Program utilizing React and Python
