@@ -3,14 +3,7 @@
 #also checks if any two consecutive characters are consecutive in ASCII using the ord command.  As a result, no password can have ex abc
 #4/8/24
 
-import random
-import secrets
-import json
-import os
-import subprocess 
-import logging 
-import math
-
+import sys,time, math, logging, subprocess, os, json, secrets, random
 #creates blank line of space
 def newprintLn():
     print("\n----------------------\n")
@@ -216,7 +209,7 @@ def pwdCheckKeyboard(pwd,num,statusDict):
         "9":"3wa",
         "0":"2q"
     }
-    
+
     for i in range(0,num-1):
         charFst = pwdString[i]
         charNxt = pwdString[i+1]
@@ -261,7 +254,13 @@ def sortManager(passwordManager):
         tempList.append((key,value))
     logInfo("Password manager sorted", 0, 20)      
     return dict(sorted(tempList))
-    
+
+#writes text slowly 
+def writeSlow(text):
+    for letter in text:
+        sys.stdout.write(letter)
+        sys.stdout.flush()
+        time.sleep(0.01)   
         
 #prints passwords in nice table format           
 def printPasswords(passwordManager):
@@ -339,7 +338,7 @@ if __name__ == "__main__":
         logging.basicConfig(filename='passwordGeneration/data/password_manager.log', level=logging.INFO, format='%(asctime)s - %(levelname)s: %(message)s')
         logInfo("New Log File Created",0,50)
         
-    print("\nHi! Welcome to the password manager! ")
+    writeSlow("\nHi! Welcome to the password manager! ")
     if os.path.exists("passwordGeneration/data/data.json"):
         with open("passwordGeneration/data/data.json", "r") as p:
             encryptedPWDManager = json.load(p)
@@ -358,9 +357,9 @@ if __name__ == "__main__":
         
         #lets computer create new password
         if options =="1":
-            c = input("Would you like your password to be a specific length? (Y or N)  ").upper()
+            c = print("Would you like your password to be a specific length? (Y or N)  ").upper()
             if c=="Y":
-                x = input("Enter length of password. It must be below 150: ")
+                x = print("Enter length of password. It must be below 150: ")
                 if x.isdigit() and int(x)<150:
                     pwd = pwdCreation(int(x))
                     pwdAppend1(pwd)

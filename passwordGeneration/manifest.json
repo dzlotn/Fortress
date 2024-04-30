@@ -1,12 +1,12 @@
 
 {
-    "name": "Covid-19 Stats UK",
+    "name": "Password Manager",
     "version": "1.0.0",
-    "description": "latest covid data of UK",
+    "description": "asdflnaslfkjd",
     "manifest_version": 3,
-    "author": "Sampurna Chapagain",
+    "author": "Daniel Zlotnick",
     "action":{
         "default_popup": "index.html",
-        "default_title": "Latest Covid Report"
+        "default_title": "Latest Report"
     }
 }
