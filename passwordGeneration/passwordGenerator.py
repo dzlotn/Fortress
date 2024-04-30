@@ -238,19 +238,31 @@ def checkCommonWords2(pwd):
             print(f"\033[31mCommon Word Found: ({i})")
             return False
     return True
-         
+
+#sorts the password manager by keys and returns a sorted manager
+def sortManager(passwordManager):
+    tempList=[]
+    for key,value in passwordManager.items():
+        tempList.append((key,value))
+    logInfo("Password manager sorted", 0, 20)      
+    return dict(sorted(tempList))
+    
+        
 #prints passwords in nice table format           
 def printPasswords(passwordManager):
     # decryptPasswords(passwordManager)
     print("\033[34m  {:<20}   {:<35}   {:<20}\033[0m".format("Program", "Username", "Password"))
-    for program, password in passwordManager.items():
+    
+    # sortedPwd = {i: passwordManager[i] for i in myPrograms}
+    sortedManager = sortManager(passwordManager)
+    for program, password in sortedManager.items():
         print("  {:<20} | {:<35} | {:<20}".format(program,password[0],password[1]))
 
 #encrypts single password
-def encryptPassword(pwd):
+def encryptPassword(pwd,x):
     encrypted_pwd = []
     for i, char in enumerate(pwd):
-        shift = (i % (len(pwd)-i)) + 1  # Varying shift for each character
+        shift = (i % (len(pwd)-i)) + x # Varying shift for each character
         new_ord = ord(char) + shift
         if new_ord > 126:  # Wrap around if beyond printable ASCII range
             new_ord -= 94
@@ -258,10 +270,10 @@ def encryptPassword(pwd):
     return "".join(encrypted_pwd)
 
 #decrypts single password
-def decryptPassword(pwd):
+def decryptPassword(pwd,x):
     decrypted_pwd = []
     for i, char in enumerate(pwd):
-        shift = (i % (len(pwd)-i)) + 1  # Varying shift for each character
+        shift = (i % (len(pwd)-i)) + x  # Varying shift for each character
         new_ord = ord(char) - shift
         if new_ord < 32:  # Wrap around if below printable ASCII range
             new_ord += 94
@@ -273,7 +285,7 @@ def massDecryption(passwordManager):
     decryptedPWDManager = {}
     for program, data in passwordManager.items():
         uname, pwd = data
-        decryptedPWDManager[program] = [uname, decryptPassword(pwd)]
+        decryptedPWDManager[program] = [decryptPassword(uname,5), decryptPassword(pwd,1)]
         # print(f"PWD {program} done")
     return decryptedPWDManager
         
@@ -285,7 +297,7 @@ def savePasswords(passwordManager):
     encryptedPasswordManager = {}
     for program, data in passwordManager.items():
         uname, pwd = data
-        encryptedPasswordManager[program] = [uname, encryptPassword(pwd)]
+        encryptedPasswordManager[program] = [encryptPassword(uname,5), encryptPassword(pwd,1)]
          
     with open("passwordGeneration/data/data.json", 'w') as f:
         json.dump(encryptedPasswordManager, f)
@@ -293,7 +305,7 @@ def savePasswords(passwordManager):
 
 #prints all programs
 def printPrograms(passwordManager):
-    print("Here are the all the programs on the password manager:")
+    print("Here are the all the programs on the password manager:\n")
     for i in passwordManager:
         print(f"\033[34m{i}\033[0m")
 
@@ -326,7 +338,7 @@ if __name__ == "__main__":
             
     while True:
             
-        options = input("\nSelect an action! \n 1: Computer creates secure password \n 2: Store new username and password \n 3: Delete a password \n 4: Change your username or password \n 5: Display all passwords \n 6: Delete Password File (PERMANNENT) \n 7: Score Password \n 8: Copy Password to Clipboard \n 9: End program and save work\n Choice: ")
+        options = input("\nSelect an action! \n 1: Computer creates secure password \n 2: Store new username and password \n 3: Delete a password \n 4: Change your username or password \n 5: Display all passwords \n 6: Score Password \n 7: Copy Password to Clipboard \n 8: Delete Password File (PERMANNENT) \n 9: Remove Log File (developer) \n 10: End program and save work\n Choice: ")
         newprintLn()
         
         #lets computer create new password
@@ -339,7 +351,7 @@ if __name__ == "__main__":
                     pwdAppend1(pwd)
                     logInfo("Password created and added to manager",options,20)
                 else: 
-                    print ("\033[33mLength should be integer below 150\033[0m")
+                    print ("\033[33mLength must be integer below 150\033[0m")
             elif c=="N":
                 pwd = pwdCreation(primeNumGen())
                 pwdAppend1(pwd)
@@ -414,20 +426,11 @@ if __name__ == "__main__":
             logInfo(f"Passwords printed to terminal",options,20)
             print("\nHere are the current passwords in the password manager: ")
             printPasswords(passwordManager)
-        
-        #deletes password file
-        elif options =="6":
-            check = input("Are you want to delete the password file. This is a permament action! (Y or N)\n").upper()
-            if check == "Y":
-                print(f"\033[31mPassword Data Removed\033[0m")
-                logInfo(f"Password Manager cleared",options,30)
-                passwordManager = {}
-                os.remove("passwordGeneration/data/data.json")
-                logInfo(f"Password File Deleted",options,30)
+             
 
                 
         #scores password
-        elif options == "7":
+        elif options == "6":
         
             choice = input("Would you like to enter your own password, use one in the passwordManager, or score one made by the computer? (OWN,PASSWORDMANAGER,COMPUTER): ").upper()
             
@@ -473,7 +476,8 @@ if __name__ == "__main__":
                 print(f"\033[31mInvalid choice\033[0m")
                 logInfo(f"Invalid Response (Choices were OWN,PASSWORDMANAGER, and COMPUTER)",options,40)
         
-        elif options =="8":
+        #Copies password to clipboard
+        elif options =="7":
             printPrograms(passwordManager)
             copyProgram = input("\nWhich password would you like to access. Enter program name: ").upper()
             if copyProgram in passwordManager:
@@ -484,10 +488,29 @@ if __name__ == "__main__":
 
             else:
                 logInfo(f"Program \"{copyProgram}\" not found",options, 40)
-                print(f"\033[31mProgram not found in password manager\033[0m")  
-            
+                print(f"\033[31mProgram not found in password manager\033[0m") 
+        
+        #deletes password file
+        elif options =="8":
+                    check = input("Are you want to delete the password file. This is a permament action! (Y or N)\n").upper()
+                    if check == "Y":
+                        print(f"\033[31mPassword Data Removed\033[0m")
+                        logInfo(f"Password Manager cleared",options,30)
+                        passwordManager = {}
+                        os.remove("passwordGeneration/data/data.json")
+                        logInfo(f"Password File Deleted",options,30) 
+        
+        #deletes log file
         elif options == "9":
-            print(f"\033[032mCode Completion - Encrypted passwords added to data/data.json file\033[0m")
+            try:
+                with open("passwordGeneration/data/password_manager.log", "w"):
+                    pass
+            except PermissionError:
+                logInfo("Delete Log File Failed",options,50)
+        
+        #ends program
+        elif options == "10":
+            print(f"\033[032mCode Completion - Encrypted passwords added to file\033[0m")
             break
         
         else:
