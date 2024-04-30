@@ -112,7 +112,6 @@ def checkStrength(pwd,printing):
     if not checkCommonWords2(pwd):
         print("\033[31m\nWARNING: COMMON PASSWORD\033[0m")
         return 0,0
-    
     score,diC,upC,lcC,arr=0,0,0,0,[]
     threshold = int(len(pwd)/3)
     pwdList = list(pwd)
@@ -126,7 +125,7 @@ def checkStrength(pwd,printing):
     differences = (abs(threshold -diC), abs(threshold-upC), abs(threshold-lcC))
     totalQuant =  round(float(sum(differences)/len(pwd)),4)*100
     
-    if printing ==1:
+    if printing == 1:
         print(f"\nintC: {diC/len(pwd)*100}%") 
         print(f"upC: {upC/len(pwd)*100}%") 
         print(f"lwC: {lcC/len(pwd)*100}%") 
@@ -193,7 +192,7 @@ def pwdCheckKeyboard(pwd,num,statusDict):
         "r3": "zxcvbnm"
         
     } 
-    keyboardLayoutCol = {
+    keyboardLayoutColLeft = {
         "1":"1qaz",
         "2":"2wsx",
         "3":"3edc",
@@ -205,6 +204,18 @@ def pwdCheckKeyboard(pwd,num,statusDict):
         "9":"9ol",
         "0":"0p"
     }
+    keyboardLayoutColRight = {
+        "1":"pl",
+        "2":"0okm",
+        "3":"9ijn",
+        "4":"8uhb",
+        "5":"7ygv",
+        "6":"6tfc",
+        "7":"5rdx",
+        "8":"4esz",
+        "9":"3wa",
+        "0":"2q"
+    }
     
     for i in range(0,num-1):
         charFst = pwdString[i]
@@ -214,13 +225,17 @@ def pwdCheckKeyboard(pwd,num,statusDict):
                 if abs(row.index(charFst) -row.index(charNxt)) ==1:
                     print(f"\033[31mClose Characters on Keyboard Found (row wise): {charFst} and {charNxt}\n\033[0mPassword Status: {statusDict[False]}\033[33m\nGenerating New Password...\033[0m")
                     return False
-                
-        for row in keyboardLayoutCol.values():
+        for row in keyboardLayoutColLeft.values():
             if charFst in row and charNxt in row:
                 if abs(row.index(charFst)- row.index(charNxt))==1:
-                    print(f"\033[31mClose Characters on Keyboard Found (column wise): {charFst} and {charNxt}\n\033[0mPassword Status: {statusDict[False]}\033[33m\nGenerating New Password...\033[0m")
+                    print(f"\033[31mClose Characters on Keyboard Found (right column wise): {charFst} and {charNxt}\n\033[0mPassword Status: {statusDict[False]}\033[33m\nGenerating New Password...\033[0m")
                     return False 
-            
+        for row in keyboardLayoutColRight.values():
+            if charFst in row and charNxt in row:
+                if abs(row.index(charFst)- row.index(charNxt))==1:
+                    print(f"\033[31mClose Characters on Keyboard Found (left column wise): {charFst} and {charNxt}\n\033[0mPassword Status: {statusDict[False]}\033[33m\nGenerating New Password...\033[0m")
+                    return False 
+                
 def checkCommonWords1(pwd,statusDict):
     commonWords = open("passwordGeneration/data/commonWords.txt","r").read()
     wordsSplitList = commonWords.splitlines()
@@ -463,7 +478,6 @@ if __name__ == "__main__":
             elif choice =="OWN":
                 try:
                     pwd = input("Enter password to be scored: ")
-                    print(x)
                     strengthScore,time = checkStrength(pwd,1)
                     print(f"Your password has a score of: \033[1m{strengthScore}%\033[0m")
                     print(f"Graphical Representation:  [{printStrengthGraphically(strengthScore)}]")  
