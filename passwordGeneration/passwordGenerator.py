@@ -4,6 +4,8 @@
 #4/8/24
 
 import sys,time, math, logging, subprocess, os, json, secrets, random
+import numpy as np
+
 #creates blank line of space
 def newprintLn():
     print("\n----------------------\n")
@@ -90,6 +92,7 @@ def pwdAppend1(pwdf):
     passwordManager[prog.upper()] = [uname,pwdf]
     print(f"\033[32mPassword ({pwdf}) added to password manager under program ({prog.upper()})\033[0m")
 
+
 #allows user to add full login info
 def pwdAppend2():
     prog = input("\nWhat program would you like to assign the password to? " )
@@ -100,11 +103,22 @@ def pwdAppend2():
     print(f"\033[32mPassword ({pwd}) added to password manager under program ({prog.upper()})\033[0m")
     return prog
 
+def f(x):
+    return round(abs(np.sqrt(x+ 0.3 * np.log(x+0.01)) -0.308),2) 
+
+def scaled(x):
+    f(0.2)
+    print(5)
 #check password strength
 def checkStrength(pwd,printing):
-    if not checkCommonWords2(pwd):
+
+    if not checkCommonWords2(pwd) or pwd=="":
         print("\033[31m\nWARNING: COMMON PASSWORD\033[0m")
         return 0,0
+
+    p = f(len(pwd))
+    print(f"factor pwd: {p}")
+    
     score,diC,upC,lcC,arr=0,0,0,0,[]
     threshold = int(len(pwd)/3)
     pwdList = list(pwd)
@@ -357,9 +371,9 @@ if __name__ == "__main__":
         
         #lets computer create new password
         if options =="1":
-            c = print("Would you like your password to be a specific length? (Y or N)  ").upper()
+            c = input("Would you like your password to be a specific length? (Y or N)  ").upper()
             if c=="Y":
-                x = print("Enter length of password. It must be below 150: ")
+                x = input("Enter length of password. The max length is 150: ")
                 if x.isdigit() and int(x)<150:
                     pwd = pwdCreation(int(x))
                     pwdAppend1(pwd)
