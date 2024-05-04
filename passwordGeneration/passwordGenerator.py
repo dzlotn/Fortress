@@ -3,9 +3,9 @@
 #also checks if any two consecutive characters are consecutive in ASCII using the ord command.  As a result, no password can have ex abc
 #4/8/24
 
-import sys,time, math, logging, subprocess, os, json, secrets, random
+import sys,time, math, logging, subprocess, os, json, secrets, random, subprocess, jpype
+from jpype import JClass, JString
 import numpy as np
-
 #creates blank line of space
 def newprintLn():
     print("\n----------------------\n")
@@ -365,8 +365,19 @@ def logInfo(action, option, level):
         print("ERROR 202: INVALID LOG LEVEL") 
 #main code loop    
 if __name__ == "__main__":
+        #imports java code
+    jpype.startJVM()
+
+    # Define the ScoringPWD class using the relative path
+    ScoringPWD = JClass("passwordGeneration.ScoringPWD")
+
+    # Example usage
+    stats = ScoringPWD.findStatistics("Hello123")
+    print("Digits:", stats.DIGITS)
+    print("Uppercase letters:", stats.UC)
+    print("Lowercase letters:", stats.LC)
+    # Get the result
     if not logging.getLogger().hasHandlers():
-        logging.basicConfig(filename='passwordGeneration/data/password_manager.log', level=logging.INFO, format='%(asctime)s - %(levelname)s: %(message)s')
         logInfo("New Log File Created",0,50)
         
     writeSlow("\nHi! Welcome to the password manager! ")
@@ -508,6 +519,13 @@ if __name__ == "__main__":
             elif choice =="OWN":
                 try:
                     pwd = input("Enter password to be scored: ")
+                   
+                    # statistics_result = subprocess.run(["java", "ScoringPWD", "findStatistics"], input=pwd, capture_output=True, text=True)
+                    # if statistics_result.returncode != 0:
+                    #     print("Error calling findStatistics method:", statistics_result.stderr)
+                    #     exit()
+                    # print("Statistics result from Java program:", statistics_result.stdout)
+
                     strengthScore,time = checkStrength(pwd,1)
                     print(f"Your password has a score of: \033[1m{strengthScore}%\033[0m")
                     print(f"Graphical Representation:  [{printStrengthGraphically(strengthScore)}]")  
