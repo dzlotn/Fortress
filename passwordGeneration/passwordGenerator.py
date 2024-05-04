@@ -104,21 +104,38 @@ def pwdAppend2():
     return prog
 
 def f(x):
-    return round(abs(np.sqrt(x+ 0.3 * np.log(x+0.01)) -0.308),2) 
+    try:
+        return round(abs(np.sqrt(x+ 0.3 * np.log(x+0.01)) -0.308),2) 
+    except RuntimeWarning: 
+        pass
 
-def scaled(x):
-    f(0.2)
-    print(5)
+def s(x):
+    if x==150:
+        return 10
+    return round((f(x)-2.96)*(125/113),5)
+
+
+def commonWordsScore(pwd):
+    if not checkCommonWords2(pwd)[0] or not pwd =="" or not pwd == " ":
+        s=10
+    else:
+        s=-10
+    return s
+
+def findPWDInfo(pwd):
+    lenVal = s(len(pwd))
+    cws = commonWordsScore(pwd)
+    print(f"LENV = {lenVal}\nCWS = {cws}")
+    return lenVal+cws
+
 #check password strength
 def checkStrength(pwd,printing):
-
-    if not checkCommonWords2(pwd) or pwd=="":
+    print(findPWDInfo(pwd))
+    # print(f"The strength of the length is {l}")
+    if not checkCommonWords2(pwd)[0] or pwd=="":
         print("\033[31m\nWARNING: COMMON PASSWORD\033[0m")
         return 0,0
 
-    p = f(len(pwd))
-    print(f"factor pwd: {p}")
-    
     score,diC,upC,lcC,arr=0,0,0,0,[]
     threshold = int(len(pwd)/3)
     pwdList = list(pwd)
@@ -257,9 +274,9 @@ def checkCommonWords2(pwd):
     wordsSplitList = commonWords.splitlines()
     for i in wordsSplitList:
         if i in pwd: 
-            print(f"\033[31mCommon Word Found: ({i})")
+            # print(f"\033[31mCommon Word Found: ({i})")
             return False
-    return True
+    return True,i
 
 #sorts the password manager by keys and returns a sorted manager
 def sortManager(passwordManager):
