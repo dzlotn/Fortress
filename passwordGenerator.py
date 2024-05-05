@@ -3,7 +3,7 @@
 # also checks if any two consecutive characters are consecutive in ASCII using the ord command.  As a result, no password can have ex abc
 # 4/8/24
 
-import time, math, logging, subprocess, os, json, secrets, random, subprocess, jpype
+import time, math, logging, subprocess, os, json, secrets, random, subprocess
 import numpy as np
 import sys
 
@@ -136,7 +136,7 @@ def s(x):
 
 
 def commonWordsScore(pwd):
-    if not checkCommonWords2(pwd)[0] or not pwd == "" or not pwd == " ":
+    if not checkCommonWords2(pwd) or not pwd == "" or not pwd == " ":
         s = 10
     else:
         s = -10
@@ -154,21 +154,21 @@ def findPWDInfo(pwd):
 def checkStrength(pwd, printing):
     print(findPWDInfo(pwd))
     # print(f"The strength of the length is {l}")
-    if not checkCommonWords2(pwd)[0] or pwd == "":
-        print("\033[31m\nWARNING: COMMON PASSWORD\033[0m")
+    if not checkCommonWords2(pwd) or pwd == "":
+        print("\033[31mWARNING: COMMON PASSWORD\033[0m")
         return 0, 0
-
-    score, diC, upC, lcC, arr = 0, 0, 0, 0, []
+    
+    #redundancy in case of code error
+    score, diC, upC, lcC  = 0, 0, 0, 0
+    
+    #calculates password
     threshold = int(len(pwd) / 3)
-    pwdList = list(pwd)
 
     # runs java file function and gets results
-    dataString = javaProgram(pwd)
-    diC = int(dataString[1 : dataString.find("U")])
-    upC = int(dataString[dataString.find("U") + 1 : dataString.find("L")])
-    lcC = int(dataString[dataString.find("L") + 1 :])
+    diC,upC,lcC = javaProgram(pwd)
+   
 
-    # calculates password score based upon the number of each type of character
+    # calculates password score based upon the frequency of each type of character
     differences = (abs(threshold - diC), abs(threshold - upC), abs(threshold - lcC))
     totalQuant = round(float(sum(differences) / len(pwd)), 4) * 100
     score = max(0, 100 - totalQuant)
@@ -312,7 +312,7 @@ def checkCommonWords2(pwd):
         if i in pwd:
             # print(f"\033[31mCommon Word Found: ({i})")
             return False
-    return True, i
+    return True
 
 
 # sorts the password manager by keys and returns a sorted manager
