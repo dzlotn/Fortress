@@ -90,37 +90,54 @@
 # # # keys = sorted.keys()
 # # # print(keys)
 
-import numpy as np
-import math
-import matplotlib.pyplot as plt 
-from numpy.polynomial import Polynomial 
-def f(x):
-    try:
-        return round(abs(np.sqrt(x+ 0.3 * np.log(x+0.01)) -0.308),2) 
-    except RuntimeWarning: 
-        pass
+# import numpy as np
+# import math
+# import matplotlib.pyplot as plt 
+# from numpy.polynomial import Polynomial 
+# def f(x):
+#     try:
+#         return round(abs(np.sqrt(x+ 0.3 * np.log(x+0.01)) -0.308),2) 
+#     except RuntimeWarning: 
+#         pass
 
-def s(x):
-    if x==150:
-        return 10
-    return round((f(x)-2.96)*(125/113),5)
+# def s(x):
+#     if x==150:
+#         return 10
+#     return round((f(x)-2.96)*(125/113),5)
 
-print(f"Min: {f(10)} Max: {f(150)}")
-print(f"Min: {s(10)} Max: {s(150)}")
-with open("passwordGeneration/data/commonWords.txt") as file:
-    lista = [str(x) for x in file]
-print(len("Penguins1352"))
-l = {}
-count={}
-for i in range(0,1000):
-    l[i] = s(i)
+# print(f"Min: {f(10)} Max: {f(150)}")
+# print(f"Min: {s(10)} Max: {s(150)}")
+# with open("passwordGeneration/data/commonWords.txt") as file:
+#     lista = [str(x) for x in file]
+# print(len("Penguins1352"))
+# l = {}
+# count={}
+# for i in range(0,1000):
+#     l[i] = s(i)
     
 # print(l)# for i in range(len(l)-1):
 #     if l[i+1] == l[i]:
 #         count[l[i]]+=1
 #         print(f"Count of {l[i]}: {count}")
 
-np.linspace(0,150,10)
-plt.plot(l.keys(), l.values())
-plt.show()
-    
+# np.linspace(0,150,10)
+# plt.plot(l.keys(), l.values())
+# plt.show()
+
+import subprocess
+
+# Compile the Java file
+compile_command = ["javac", "passwordGeneration/JAVA/ScoringPWD.java"]
+subprocess.run(compile_command, check=True)
+pwd = input("Enter a password: ")
+# Define the command to run the Java program
+run_command = ["java", "ScoringPWD", pwd]
+subprocess.run(run_command, check=True)
+
+# Read the output from the file
+with open("passwordGeneration/data/statisticsPWD.txt") as file:
+    for line in file:
+        pass
+    lf = line
+print(lf)
+

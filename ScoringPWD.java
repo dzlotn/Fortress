@@ -1,3 +1,4 @@
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -35,15 +36,16 @@ public class ScoringPWD {
             System.out.println("Usage: java ScoringPWD <password>");
             return;
         }
-        
+
         String password = args[0];
         characterCounts counts = findStatistics(password);
-        String output = "D" + counts.DIGITS + 
-                        "U" + counts.UC + 
-                        "L" + counts.LC;
+        String output = "D" + counts.DIGITS +
+                "U" + counts.UC +
+                "L" + counts.LC;
 
         // Append the output to a new line in a text file
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("passwordGeneration/data/statisticsPWD.txt", true))) {
+        try (BufferedWriter writer = new BufferedWriter(
+                new FileWriter("passwordGeneration/data/statisticsPWD.txt", true))) {
             writer.write(output);
             writer.newLine(); // Add a new line
         } catch (IOException e) {
