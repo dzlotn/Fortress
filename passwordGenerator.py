@@ -7,9 +7,9 @@ import time, math, logging, subprocess, os, json, secrets, random, subprocess
 import numpy as np
 import sys
 
-sys.path.append("..")  # Add the parent directory to the Python path
 from PyJavaRunner import javaProgram
 
+sys.path.append("..")  # Add the parent directory to the Python path
 
 # creates blank line of space
 def newprintLn():
@@ -139,7 +139,7 @@ def commonWordsScore(pwd):
     if not checkCommonWords2(pwd) or not pwd == "" or not pwd == " ":
         s = 10
     else:
-        s = -10
+        s = 0
     return s
 
 def charDistScore(pwd, printing):
@@ -177,8 +177,8 @@ def findPWDInfo(pwd):
     commonWS = commonWordsScore(pwd)
     charDS,time = charDistScore(pwd,1)
     cDS = round(charDS/10)
-    print(f"LENV = {lenVal}\ncommonWS = {commonWS}\ncharDS = {charDS}")
-    return lenVal + commonWS + cDS, time
+    print(f"LENV = {lenVal}\ncommonWS = {commonWS}\ncharDS = {cDS}")
+    return max(lenVal*3.3 + commonWS*3.4 + cDS*3.4,0), time, 
 
 
 
@@ -186,7 +186,7 @@ def findPWDInfo(pwd):
 def checkStrength(pwd, printing):
     strength,time = findPWDInfo(pwd)
     print(f"2 Score Total: {strength}")
-    return strength,time
+    return round(strength,3),time
     
     
     
@@ -563,7 +563,7 @@ if __name__ == "__main__":
 
         # scores password
         elif options == "6":
-
+            
             choice = input(
                 "Would you like to enter your own password, use one in the passwordManager, or score one made by the computer? (OWN,PASSWORDMANAGER,COMPUTER): "
             ).upper()
