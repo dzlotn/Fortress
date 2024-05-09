@@ -142,18 +142,7 @@ def commonWordsScore(pwd):
         s = -10
     return s
 
-
-def findPWDInfo(pwd):
-    lenVal = s(len(pwd))
-    cws = commonWordsScore(pwd)
-    print(f"LENV = {lenVal}\nCWS = {cws}")
-    return lenVal + cws
-
-
-# check password strength
-def checkStrength(pwd, printing):
-    print(findPWDInfo(pwd))
-    # print(f"The strength of the length is {l}")
+def charDistScore(pwd, printing):
     if not checkCommonWords2(pwd) or pwd == "":
         print("\033[31mWARNING: COMMON PASSWORD\033[0m")
         return 0, 0
@@ -177,11 +166,30 @@ def checkStrength(pwd, printing):
         print(f"\nintC: {diC/len(pwd)*100}%")
         print(f"upC: {upC/len(pwd)*100}%")
         print(f"lwC: {lcC/len(pwd)*100}%")
-        print(f"Differences: {differences}")
+        # print(f"Differences: {differences}")
         (a, time) = calculatePasswordEntropy(pwd)
-        print(f"Password Entropy: {a}")
+        print(f"Password Entropy: {a} in time {time} seconds")
+        
+    return round(score, 3), time 
 
-    return round(score, 3), time
+def findPWDInfo(pwd):
+    lenVal = s(len(pwd))
+    commonWS = commonWordsScore(pwd)
+    charDS,time = charDistScore(pwd,1)
+    cDS = round(charDS/10)
+    print(f"LENV = {lenVal}\ncommonWS = {commonWS}\ncharDS = {charDS}")
+    return lenVal + commonWS + cDS, time
+
+
+
+# check password strength
+def checkStrength(pwd, printing):
+    strength,time = findPWDInfo(pwd)
+    print(f"2 Score Total: {strength}")
+    return strength,time
+    
+    
+    
 
 
 # prints the password strength using a bar
@@ -563,7 +571,7 @@ if __name__ == "__main__":
             if choice == "COMPUTER":
                 pwd = pwdCreation(primeNumGen())
                 strengthScore, time = checkStrength(pwd, 1)
-                print(f"Your password has a score of: \033[1m{strengthScore}%\033[0m")
+                print(f"Your password has a preliminary score of: \033[1m{strengthScore}%\033[0m")
                 print(
                     f"Graphical Representation:  [{printStrengthGraphically(strengthScore)}]"
                 )

@@ -2,7 +2,7 @@
 
 import subprocess
 
-def javaProgram(pwd):
+def javaProgram(pwd,**kwargs):
     compile_command = ["javac", "scoringPWD.java"]
     subprocess.run(compile_command, check=True)
 
@@ -11,7 +11,7 @@ def javaProgram(pwd):
     
     subprocess.run(run_command, check=True)
     
-    # Read the output from the file
+    # Read the output from the file and gets last line
     with open("passwordGeneration/data/statisticsPWD.txt") as file:
         for line in file:
             pass
