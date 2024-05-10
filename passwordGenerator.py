@@ -447,7 +447,7 @@ if __name__ == "__main__":
     while True:
 
         options = input(
-            "\nSelect an action! \n 1: Computer creates secure password \n 2: Store new username and password \n 3: Delete a password \n 4: Change your username or password \n 5: Display all passwords \n 6: Score Password \n 7: Copy Password to Clipboard \n 8: Delete Password File (PERMANNENT) \n 9: Remove Log File (developer) \n 10: End program and save work\n Choice: "
+            "\nSelect an action! \n 1: Generate secure password \n 2: Store new username and password \n 3: Delete a password \n 4: Change username or password \n 5: Display all passwords \n 6: Score Password \n 7: Copy Password to Clipboard \n 8: Delete Password File (PERMANNENT) \n 9: Remove Log File (developer) \n 10: End program and save work\n Choice: "
         )
         newprintLn()
 
