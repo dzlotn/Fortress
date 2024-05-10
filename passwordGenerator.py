@@ -693,3 +693,5 @@ if __name__ == "__main__":
             print(f"\033[031mInvalid Command. Please try again\033[0m")
     savePasswords(passwordManager)
     logInfo(f"All data saved", 0, 20)
+    
+    

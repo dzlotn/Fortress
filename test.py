@@ -1,158 +1,244 @@
-#          import logging
+# #          import logging
 
-#          if not logging.getLogger().hasHandlers():
-#                  logging.basicConfig(filename='lasjldkfjlksja.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# #          if not logging.getLogger().hasHandlers():
+# #                  logging.basicConfig(filename='lasjldkfjlksja.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
       
-#          def logInfo(action, option, level):
-#              levelDic = {10: "debug", 20: "info",30:"warning",40:"error", 50:"critical"}
-#              funcName = levelDic.get(level)
-#              if funcName:
-#                  logging_function = getattr(logging, funcName)
-#                 logging_function(f"Action: ({action}) for option: ({option})")
-#              else:
-#                  print("\033[31mERROR 202\033[0m: INVALID LOG LEVEL")
+# #          def logInfo(action, option, level):
+# #              levelDic = {10: "debug", 20: "info",30:"warning",40:"error", 50:"critical"}
+# #              funcName = levelDic.get(level)
+# #              if funcName:
+# #                  logging_function = getattr(logging, funcName)
+# #                 logging_function(f"Action: ({action}) for option: ({option})")
+# #              else:
+# #                  print("\033[31mERROR 202\033[0m: INVALID LOG LEVEL")
     
-#          logInfo("Added Password",2,40)
+# #          logInfo("Added Password",2,40)
     
-#          logInfo("Fix Deforestation",4,50)
+# #          logInfo("Fix Deforestation",4,50)
 
-#         def checkCommonWords(pwd):
-#             commonWords = open("passwordGeneration/data/commonword.txt","r").read()
-#             wordsSplit = commonWords.split("\n")
+# #         def checkCommonWords(pwd):
+# #             commonWords = open("passwordGeneration/data/commonword.txt","r").read()
+# #             wordsSplit = commonWords.split("\n")
     
-#             if pwd in wordsSplit:
-#                 print("True")
+# #             if pwd in wordsSplit:
+# #                 print("True")
         
-#         checkCommonWords("peng")
-#        import math
-#        def calculatePasswordEntropy(pwd):
-#            charamt = 0
-#            charPrices = [26,26,9]
-#            charCheck = [False,False,False]
-#            for i in pwd:
-#                if i.islower():
-#                    charCheck[0] = True
-#                elif i.isupper():
-#                    charCheck[1] = True
-#                elif i.isdigit():
-#                    charCheck[2] = True
-#            for a in range(3):
-#                if charCheck[a]:
-#                    charamt+=charPrices[a]        
-#            entropy = math.log2(charamt)*len(pwd)
-#            return entropy
+# #         checkCommonWords("peng")
+# #        import math
+# #        def calculatePasswordEntropy(pwd):
+# #            charamt = 0
+# #            charPrices = [26,26,9]
+# #            charCheck = [False,False,False]
+# #            for i in pwd:
+# #                if i.islower():
+# #                    charCheck[0] = True
+# #                elif i.isupper():
+# #                    charCheck[1] = True
+# #                elif i.isdigit():
+# #                    charCheck[2] = True
+# #            for a in range(3):
+# #                if charCheck[a]:
+# #                    charamt+=charPrices[a]        
+# #            entropy = math.log2(charamt)*len(pwd)
+# #            return entropy
 
-#        print(calculatePasswordEntropy("proseCutter"))
+# #        print(calculatePasswordEntropy("proseCutter"))
 
-#       list = ["password1","alksjdflk","alksjkdflkjlkaj2i2"]
-#       password = "password12"
-#       for i in list:
-#           if i in password:
-#               print("yes")
-
-
-#      import time
-#      from rich import print
-#      print("[italic red]Hello[/italic red] World!", locals())
-
-#       for i in p(range(20), description="Processing..."):
-#     from rich import pretty
-#     pretty.install()
-#     ["Rich and pretty", True]
-#           time.sleep(1)   Simulate work being done 
+# #       list = ["password1","alksjdflk","alksjkdflkjlkaj2i2"]
+# #       password = "password12"
+# #       for i in list:
+# #           if i in password:
+# #               print("yes")
 
 
-#    creates the dictionary into a list of dictionaries and then order the dictionaries based on their keys
-#    testDict = {"b":1,"a":2,"d":3,"c":4}
-#    print(testDict.items())
-#    list=[]
-#    for key,value in testDict.items():
-#        list.append((key,value))
-#    print(dict(sorted(list)))
+# #      import time
+# #      from rich import print
+# #      print("[italic red]Hello[/italic red] World!", locals())
+
+# #       for i in p(range(20), description="Processing..."):
+# #     from rich import pretty
+# #     pretty.install()
+# #     ["Rich and pretty", True]
+# #           time.sleep(1)   Simulate work being done 
+
+
+# #    creates the dictionary into a list of dictionaries and then order the dictionaries based on their keys
+# #    testDict = {"b":1,"a":2,"d":3,"c":4}
+# #    print(testDict.items())
+# #    list=[]
+# #    for key,value in testDict.items():
+# #        list.append((key,value))
+# #    print(dict(sorted(list)))
     
-#    import sys
+# #    import sys
 
-#    if args == "baby":
-#        print("hello")
+# #    if args == "baby":
+# #        print("hello")
 
-#   import sys
-#   import time
-#   args = sys.argv[1:] 
+# #   import sys
+# #   import time
+# #   args = sys.argv[1:] 
 
-#   def print_slow(str):
-#       for letter in str:
-#           sys.stdout.write(letter)
-#           sys.stdout.flush()
-#           time.sleep(0.01)
-#       print(sys.getsizeof(args))
+# #   def print_slow(str):
+# #       for letter in str:
+# #           sys.stdout.write(letter)
+# #           sys.stdout.flush()
+# #           time.sleep(0.01)
+# #       print(sys.getsizeof(args))
 
-#   print_slow("Type whatever you want here")
-#     keys = sorted.keys()
-#     print(keys)
+# #   print_slow("Type whatever you want here")
+# #     keys = sorted.keys()
+# #     print(keys)
 
-#   import numpy as np
-#   import math
-#   import matplotlib.pyplot as plt 
-#   from numpy.polynomial import Polynomial 
-#   def f(x):
-#       try:
-#           return round(abs(np.sqrt(x+ 0.3 * np.log(x+0.01)) -0.308),2) 
-#       except RuntimeWarning: 
-#           pass
+# #   import numpy as np
+# #   import math
+# #   import matplotlib.pyplot as plt 
+# #   from numpy.polynomial import Polynomial 
+# #   def f(x):
+# #       try:
+# #           return round(abs(np.sqrt(x+ 0.3 * np.log(x+0.01)) -0.308),2) 
+# #       except RuntimeWarning: 
+# #           pass
 
-#   def s(x):
-#       if x==150:
-#           return 10
-#       return round((f(x)-2.96)*(125/113),5)
+# #   def s(x):
+# #       if x==150:
+# #           return 10
+# #       return round((f(x)-2.96)*(125/113),5)
 
-#   print(f"Min: {f(10)} Max: {f(150)}")
-#   print(f"Min: {s(10)} Max: {s(150)}")
-#   with open("passwordGeneration/data/commonWords.txt") as file:
-#       lista = [str(x) for x in file]
-#   print(len("Penguins1352"))
-#   l = {}
-#   count={}
-#   for i in range(0,1000):
-#       l[i] = s(i)
+# #   print(f"Min: {f(10)} Max: {f(150)}")
+# #   print(f"Min: {s(10)} Max: {s(150)}")
+# #   with open("passwordGeneration/data/commonWords.txt") as file:
+# #       lista = [str(x) for x in file]
+# #   print(len("Penguins1352"))
+# #   l = {}
+# #   count={}
+# #   for i in range(0,1000):
+# #       l[i] = s(i)
     
-#   print(l) for i in range(len(l)-1):
-#       if l[i+1] == l[i]:
-#           count[l[i]]+=1
-#           print(f"Count of {l[i]}: {count}")
+# #   print(l) for i in range(len(l)-1):
+# #       if l[i+1] == l[i]:
+# #           count[l[i]]+=1
+# #           print(f"Count of {l[i]}: {count}")
 
-#   np.linspace(0,150,10)
-#   plt.plot(l.keys(), l.values())
-#   plt.show()
+# #   np.linspace(0,150,10)
+# #   plt.plot(l.keys(), l.values())
+# #   plt.show()
 
-#  import subprocess
+# #  import subprocess
 
-#   Compile the Java file
-#  compile_command = ["javac", "passwordGeneration/JAVA/ScoringPWD.java"]
-#  subprocess.run(compile_command, check=True)
-#  pwd = input("Enter a password: ")
-#   Define the command to run the Java program
-#  run_command = ["java", "ScoringPWD", pwd]
-#  subprocess.run(run_command, check=True)
+# #   Compile the Java file
+# #  compile_command = ["javac", "passwordGeneration/JAVA/ScoringPWD.java"]
+# #  subprocess.run(compile_command, check=True)
+# #  pwd = input("Enter a password: ")
+# #   Define the command to run the Java program
+# #  run_command = ["java", "ScoringPWD", pwd]
+# #  subprocess.run(run_command, check=True)
 
-#   Read the output from the file
-#  with open("passwordGeneration/data/statisticsPWD.txt") as file:
-#      for line in file:
-#          pass
-#      lf = line
-#  print(lf)
+# #   Read the output from the file
+# #  with open("passwordGeneration/data/statisticsPWD.txt") as file:
+# #      for line in file:
+# #          pass
+# #      lf = line
+# #  print(lf)
 
 
 
-# dict = {"a":5,"b":3,"c":10}
-# minval = min(dict.values())
-# min = [var for var, val in dict.items() if val==minval]
-# print(min)
-# binary = bin(123)[2:]
-# string = ""
-# if len(binary)<8:
-#     news = (8-len(binary))*"0"
-#     string = news+binary
-# print(string)
-# or
-# print(binary.zfill(8))
-#  print(bin(123)[2:])
+# # dict = {"a":5,"b":3,"c":10}
+# # minval = min(dict.values())
+# # min = [var for var, val in dict.items() if val==minval]
+# # print(min)
+# # binary = bin(123)[2:]
+# # string = ""
+# # if len(binary)<8:
+# #     news = (8-len(binary))*"0"
+# #     string = news+binary
+# # print(string)
+# # or
+# # print(binary.zfill(8))
+# #  print(bin(123)[2:])
+# # Define constants for QR code
+# MODULE_PIXELS = 10
+# QUIET_ZONE_SIZE = 4
+
+# # Define QR code patterns
+# PATTERN_FINDER = [
+#     "111111111111111",  # Top left
+#     "100000000000001",
+#     "101111111111101",
+#     "101111111111101",
+#     "101111111111101",
+#     "101111111111101",
+#     "101111111111101",
+#     "100000000000001",
+#     "111111111111111"   # Bottom right
+# ]
+
+# PATTERN_ALIGNMENT = [
+#     "111",  # Alignment pattern
+#     "101",
+#     "111"
+# ]
+
+# PATTERN_TIMING = [
+#     "100000000000001",
+#     "111111111111111",
+#     "100000000000001",
+#     "111111111111111",
+#     "100000000000001"
+# ]
+
+# # Function to generate QR code
+# def generate_qr_code(data):
+#     qr_code = []
+
+#     # Add quiet zone
+#     for _ in range(QUIET_ZONE_SIZE):
+#         qr_code.append([0] * (len(data) + 2 * QUIET_ZONE_SIZE))
+
+#     # Add timing pattern
+#     for row in PATTERN_TIMING:
+#         qr_code.append([int(x) for x in row])
+
+#     # Add data and alignment patterns
+#     for i, row in enumerate(data):
+#         qr_code.append([0] * QUIET_ZONE_SIZE)
+#         for j, pixel in enumerate(row):
+#             qr_code[-1].append(int(pixel))
+#         qr_code[-1] += [0] * QUIET_ZONE_SIZE
+
+#     # Add timing pattern
+#     for row in PATTERN_TIMING:
+#         qr_code.append([int(x) for x in row])
+
+#     return qr_code
+
+# # Function to display QR code
+# def display_qr_code(qr_code):
+#     for row in qr_code:
+#         for pixel in row:
+#             if pixel == 1:
+#                 print("██", end="")
+#             else:
+#                 print("  ", end="")
+#         print()
+
+# # Example data
+# data = [
+#     "101010101010101",
+#     "010101010101010",
+#     "101010101010101",
+#     "010101010101010",
+#     "101010101010101",
+#     "010101010101010",
+#     "101010101010101",
+#     "010101010101010"
+# ]
+
+# # Generate and display QR code
+# # qr_code = generate_qr_code(data)
+# display_qr_code(data)
+
+
+print("hello", end = "as", flush=True)
+zip()
+# print("Hi")
