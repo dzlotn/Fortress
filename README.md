@@ -29,7 +29,7 @@ Fortress is a sophisticated suite designed for generating, analyzing, and secure
    
 4. Run the following command in the terminal (make sure you are on the outermost directory)
   ```sh
-  python fortress.py
+  python FORTRESS.py
   ```
 5. Follow the prompts to manage your passwords!
 
