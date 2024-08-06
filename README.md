@@ -1,7 +1,7 @@
-## Password Manager Program with Python and Java
+## Fortress: A Password Manager Program with Python and Java
 
 ## The Project
-This project contains both a Python script and a Java program to generate, analyze, and store secure passwords. The Python script generates passwords with specific security criteria, while the Java program analyzes the generated passwords for character statistics. The program also allows for encrypted password storage with options to update passwords/usernames/programs with new information. 
+Fortress is a sophisticated suite designed for generating, analyzing, and securely storing passwords. This suite integrates a Python script for password generation and a Java program for detailed password analysis, ensuring comprehensive management and security of your credentials. The Python script generates passwords with specific security criteria, while the Java program analyzes the generated passwords for character statistics. The program also allows for encrypted password storage with options to update passwords/usernames/programs with new information. 
 
 ## Python Features
  * _Prime Number Length_: Generates passwords with lengths that are prime numbers.
@@ -29,7 +29,7 @@ This project contains both a Python script and a Java program to generate, analy
    
 4. Run the following command in the terminal (make sure you are on the outermost directory)
   ```sh
-  python passwordGenerator.py
+  python fortress.py
   ```
 5. Follow the prompts to manage your passwords!
 
