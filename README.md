@@ -31,7 +31,7 @@ This project contains both a Python script and a Java program to generate, analy
   ```sh
   python passwordGenerator.py
   ```
-5. Store your passwords!
+5. Follow the prompts to manage your passwords!
 
 
 ## Java Installation
