@@ -1,7 +1,7 @@
 ## Password Manager Program with Python and Java
 
 ## The Project
-This project contains both a Python script and a Java program to generate and analyze secure passwords. The Python script generates passwords with specific security criteria, while the Java program analyzes the generated passwords for character statistics. The program also allows for encrypted password storage with options to update passwords/usernames/programs with new information. 
+This project contains both a Python script and a Java program to generate, analyze, and store secure passwords. The Python script generates passwords with specific security criteria, while the Java program analyzes the generated passwords for character statistics. The program also allows for encrypted password storage with options to update passwords/usernames/programs with new information. 
 
 ## Getting Started
 1. Clone the entire repository and load it on VS Code
